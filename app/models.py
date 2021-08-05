@@ -1,7 +1,5 @@
 from datetime import datetime
 
-from sqlalchemy.orm import backref
-
 from app import db
 
 from werkzeug.security import generate_password_hash, check_password_hash
@@ -18,7 +16,7 @@ class Role(db.Model):
     name = db.Column(db.String(64), nullable = False)
 
     #Tables relationship setup
-    users = db.relationship('User',backref = 'role', dynamic = 'lazy')
+    users = db.relationship('User',backref = 'role', lazy = 'dynamic')
 
     def __str__(self):
 
@@ -35,7 +33,10 @@ class User(db.Model):
     email = db.Column(db.String(120), unique = True)
     password_hash  = db.Column(db.String(240), nullable = False)
     register_date = db.Column(db.DateTime, default = datetime.utcnow)
+    confirmed = db.Column(db.Boolean, default = False)
+    phone_number = db.Column(db.String(20))
     role = db.Column(db.Integer, db.ForeignKey('roles.id'))
+
 
     """ 
         ________________________________________________________________________
