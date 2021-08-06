@@ -1,6 +1,6 @@
 
 from .errors import forbidden_errror , unauthorised
-from flask import current_app, jsonify, g, request
+from flask import current_app, json, jsonify, g, request
 from app.models import User
 from app.schema import UserSchema
 
@@ -8,6 +8,7 @@ from flask_httpauth import HTTPBasicAuth
 from .import auth as auth_bp
 
 from app import db
+from app.email import send_email
 
 import pdb
 
@@ -83,10 +84,15 @@ def register():
     user.password = request_body['Password']
 
     db.session.add(user)
+    db.session.commit()
 
-    response = {"message":"Confirm Your account to the link sent to you"}
+    token = user.generate_confirmation_token()
 
-    return 
+    send_email(user.email, "Please Confirm Your Account",'templates', user = user, token = token)
+
+    response = {"message":f"Confirm Your account to the link sent to {user.email} "}
+
+    return jsonify(response)
     
 @auth_bp.route("/token", methods = ["POST"])
 @auth.login_required
@@ -98,5 +104,24 @@ def token():
 
 
     return jsonify({"token":g.current_user.generate_auth_token(expiration = 3600),"expiration":3599})
+
+
+@auth_bp.route('/confirm/<token>')
+@auth.login_required
+def confirm(token):
+    if g.current_user.confirmed:
+
+        return forbidden_errror("Account Aready Confirmed")
+
+    if g.current_user.confirm(token):
+        
+        return jsonify({"Message": "Thenks Your account is now confirmed"}), 201
+    else:
+
+        return forbidden_errror('The confirmation link is invalid or has expired.')
+
+    return jsonify({"Message":"Something unexpected went wrong please try again later"}), 500
+    
+
 
 
