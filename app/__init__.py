@@ -1,13 +1,16 @@
 from flask import Flask
 
 from flask_sqlalchemy import SQLAlchemy
-import sqlalchemy
+from flask_marshmallow import Marshmallow
+from flask_mail import Mail
 
 from config import config
 
 ##dependencies module initialization
 
 db = SQLAlchemy()
+ma = Marshmallow()
+mail = Mail()
 
 def create_app(config_name):
 
@@ -18,6 +21,9 @@ def create_app(config_name):
 
 
     #module integration with the application
+    db.init_app(app)
+    ma.init_app(app)
+    mail.init_app(app)
 
     #Application Blueprint Registration
 
