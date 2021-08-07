@@ -107,7 +107,7 @@ class User(db.Model):
     register_date = db.Column(db.DateTime, default = datetime.utcnow)
     confirmed = db.Column(db.Boolean, default = False)
     phone_number = db.Column(db.String(20))
-    role = db.Column(db.Integer, db.ForeignKey('roles.id'))
+    role_id = db.Column(db.Integer, db.ForeignKey('roles.id'))
 
 
     """When an instance of this class is made check if the email passed equal to the stored admin email
@@ -123,7 +123,7 @@ class User(db.Model):
 
         if self.role is None:
 
-            if self.email == current_app.config['ADMIN_MAIL']:
+            if self.email == current_app.config['MAIL_ADMIN']:
 
                 self.role = Role.query.filter_by(permissions=0xff).first()
 
@@ -161,7 +161,7 @@ class User(db.Model):
 
     def generate_confirmation_token(self, expiration = 3600):
 
-        s = Serializer(current_app.config['SECRET_KEY'], expiration = expiration)
+        s = Serializer(current_app.config['SECRET_KEY'], expires_in=expiration)
 
         return s.dumps({'Confirm': self.id})
 

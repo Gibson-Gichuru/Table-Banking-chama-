@@ -5,11 +5,9 @@ Thenks For registering With us:
 
 To Confirm your account please click on the following link:
 
-{{ url_for('auth_bp.confirm', token = token, _external = True) }}
+{{ url_for('auth.confirm', token = token, _external = True) }}
 
 
-Sincerely:
-
-The House Of Meme Team.
+Always at your service.
 
 Note: replies to this email are not monitored

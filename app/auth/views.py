@@ -5,17 +5,17 @@ from app.models import User
 from app.schema import UserSchema
 
 from flask_httpauth import HTTPBasicAuth
-from .import auth as auth_bp
+from .import auth
 
 from app import db
 from app.email import send_email
 
 import pdb
 
-auth = HTTPBasicAuth()
+authentication = HTTPBasicAuth()
 user_schema = UserSchema()
 
-@auth.verify_password
+@authentication.verify_password
 def verify_password(email_or_token, password):
 
     if email_or_token == "":
@@ -41,7 +41,7 @@ def verify_password(email_or_token, password):
     return user.verify_password(email_or_token)
 
 
-@auth_bp.route('/register', methods = ["POST"])
+@auth.route('/register', methods = ["POST"])
 def register():
 
     request_body = request.get_json()
@@ -60,7 +60,7 @@ def register():
 
     existing_user =User.query.filter_by(email = request_body['Email']).first()
     existing_username =User.query.filter_by(username = request_body['UserName']).first()
-    existing_phone =User.query.filter_by(phone_numer = request_body['PhoneNumer']).first()
+    existing_phone =User.query.filter_by(phone_number = request_body['PhoneNumber']).first()
 
     if existing_user:
 
@@ -78,7 +78,7 @@ def register():
 
         email = request_body['Email'],
         username = request_body['UserName'],
-        phone = request_body['Phone'],
+        phone_number = request_body['PhoneNumber'],
     )
 
     user.password = request_body['Password']
@@ -88,14 +88,14 @@ def register():
 
     token = user.generate_confirmation_token()
 
-    send_email(user.email, "Please Confirm Your Account",'templates', user = user, token = token)
+    send_email(user.email, "Please Confirm Your Account",'email', user = user, token = token)
 
     response = {"message":f"Confirm Your account to the link sent to {user.email} "}
 
     return jsonify(response)
     
-@auth_bp.route("/token", methods = ["POST"])
-@auth.login_required
+@auth.route("/token", methods = ["POST"])
+@authentication.login_required
 def token():
     
     if not g.current_user or g.token_used:
@@ -106,8 +106,8 @@ def token():
     return jsonify({"token":g.current_user.generate_auth_token(expiration = 3600),"expiration":3599})
 
 
-@auth_bp.route('/confirm/<token>')
-@auth.login_required
+@auth.route('/confirm/<token>')
+@authentication.login_required
 def confirm(token):
     if g.current_user.confirmed:
 

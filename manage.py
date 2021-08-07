@@ -18,9 +18,7 @@ migrate = Migrate(app, db)
 
 def make_shell_context():
 
-    return dict(user = User, role = Role, )
-
-    pass
+    return dict(User = User, Role = Role, db = db)
 
 
 @manager.command
