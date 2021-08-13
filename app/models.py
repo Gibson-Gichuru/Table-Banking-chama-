@@ -1,4 +1,7 @@
 from datetime import datetime
+from enum import unique
+
+from sqlalchemy.orm import backref
 
 from app import db
 
@@ -69,6 +72,7 @@ class Role(db.Model):
         roles = {
 
             "User": (Permissions.PAYMENT | Permissions.PAYMENT_HISTORY | Permissions.PUBLIC_LEDGER, True),
+            "bot": (Permissions.PAYMENT | Permissions.PAYMENT_HISTORY | Permissions.PUBLIC_LEDGER, False),
             "Administrator": (0xff, False)
         }
 
@@ -108,6 +112,10 @@ class User(db.Model):
     confirmed = db.Column(db.Boolean, default = False)
     phone_number = db.Column(db.String(20))
     role_id = db.Column(db.Integer, db.ForeignKey('roles.id'))
+
+    #RELATIONSHIP
+
+    bot_command = db.relationship("BotActivity", backref = "user", lazy = "dynamic")
 
 
     """When an instance of this class is made check if the email passed equal to the stored admin email
@@ -205,5 +213,60 @@ class User(db.Model):
 
     def __str__(self) -> str:
         return f"<User:{self.username}>"
+
+
+
+class BotCommand(db.Model):
+
+    __tablename__="bot_commands"
+
+    id = db.Column(db.Integer, primary_key = True)
+    name = db.Column(db.String(65), unique = True, index = True)
+
+    #RELATIONSHIPS
+
+    activity = db.relationship("BotActivity", backref = "command", lazy = "dynamic")
+
+    
+
+    @staticmethod
+    def insert_commands():
+
+        active_commands = ["LEDGER", "PAYMENT", "LOAN", "HISTORY"]
+
+        for c in active_commands:
+
+            command = BotCommand.query.filter_by(name = active_commands[c]).first()
+
+            if command is not None:
+
+                command = BotCommand(name = active_commands[c])
+
+                db.session.add(command)
+
+        db.session.commit()
+
+
+
+
+    def __str__(self):
+
+        return f"<Command: {self.name}>"
+
+
+class BotActivity(db.Model):
+
+    __tablename__ = "bot_activity"
+
+    id = db.Column(db.Integer, primary_key = True)
+    user_id = db.Column(db.Integer, db.ForeignKey('users.id'))
+    command_id = db.Column(db.Integer, db.ForeignKey('bot_commands.id'))
+    timestamp = db.Column(db.DateTime, default = datetime.utcnow)
+    finished = db.Column(db.Boolean, default = False)
+
+
+    def _str__(self):
+
+        return f"<Command:>"
 
 

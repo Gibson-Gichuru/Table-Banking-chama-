@@ -24,7 +24,9 @@ class Config:
     MAIL_ADMIN = os.environ.get("MAIL_ADMIN")
 
 
+    ##Telebot Config settings
 
+    TELEBOT_TOKEN = os.environ.get('TELEBOT_TOKEN')
 
     ## Common application configuration
 
