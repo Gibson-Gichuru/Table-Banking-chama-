@@ -28,9 +28,13 @@ class Config:
 
     TELEBOT_TOKEN = os.environ.get('TELEBOT_TOKEN')
 
+    ##MPESA Config setting
+
+    MPESA_KEY = os.environ.get('CONSUMER_KEY')
+    MPESA_SECRET = os.environ.get('CONSUMER_SECRET')
+
     ## Common application configuration
 
-    pass
 
 
 class Development(Config):

@@ -117,6 +117,8 @@ class User(db.Model):
 
     bot_command = db.relationship("BotActivity", backref = "user", lazy = "dynamic")
 
+    payment = db.relationship("Payment", backref='payer', lazy = 'dynamic')
+
 
     """When an instance of this class is made check if the email passed equal to the stored admin email
     
@@ -268,5 +270,24 @@ class BotActivity(db.Model):
     def _str__(self):
 
         return f"<Command:>"
+
+
+
+class Payment(db.Model):
+
+    __tablename_ ="payments"
+
+    id = db.Column(db.Integer, primary_key = True)
+    timestamp = db.Column(db.DateTime, default = datetime.utcnow)
+    amount = db.Column(db.Numeric(10, 2))
+    description = db.Column(db.Text)
+    reference = db.Column(db.Text)
+    first_name = db.Column(db.String(64))
+    middle_name = db.Column(db.String(64))
+    last_name = db.Column(db.String(64))
+    phone_number = db.Column(db.String(64))
+    organization_balance = db.Column(db.Numeric(10, 2))
+
+    user_id = db.Column(db.Integer, db.ForeignKey('users.id'))
 
 
