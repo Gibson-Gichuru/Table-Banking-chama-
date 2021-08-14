@@ -1,6 +1,7 @@
 #Python Standard package importation
 
 
+import json
 import os, sys, requests
 
 #Flask retaled package importation
@@ -13,6 +14,8 @@ from flask import url_for
 
 from app import create_app, db
 from app.models import User, Role, BotActivity, BotCommand
+
+from app.payments.mpesa_utils import Mpesa
 
 ##application initalization 
 
@@ -42,6 +45,9 @@ def register_bot():
     response = requests.get(url)
 
     print(response.json()['description'])
+
+
+
 
 
 

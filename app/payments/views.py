@@ -1,21 +1,26 @@
 from . import payment
 
+from flask import current_app, url_for, jsonify, Response, request
+
 from app.auth.views import authentication
 
 from app.schema import PaymentSchema
 
+import requests
+
+from app.payments.mpesa_utils import Mpesa
+
 schema = PaymentSchema()
 
 
-@payment.route("/confirmation", methods = ['POST'])
-def mpesa_callback_confirmation():
+@payment.route("/confirmation", methods = ['POST', 'GET'])
+def confirmation():
+    return Response('ok', status=200)
 
-    pass
+@payment.route('/validation', methods=['POST', 'GET'])
+def validation():
 
-@payment.route('/validation', methods=['POST'])
-def mpesa_callback_validation():
-
-    pass
+    return Response('ok', status=200)
 
 
 @payment.route('/make_payments')
@@ -23,3 +28,4 @@ def mpesa_callback_validation():
 def make_payments():
 
     pass
+

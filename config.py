@@ -32,6 +32,7 @@ class Config:
 
     MPESA_KEY = os.environ.get('CONSUMER_KEY')
     MPESA_SECRET = os.environ.get('CONSUMER_SECRET')
+    BUSINESS_CODE = os.environ.get('BUSINESS_CODE')
 
     ## Common application configuration
 

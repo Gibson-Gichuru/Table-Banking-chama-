@@ -3,12 +3,14 @@ import requests
 
 import base64
 
+import hashlib
+
 
 class Mpesa:
 
     def __init__(self):
 
-        self.auth_url = "https://sandbox.safaricom.co.ke/oauth/v1/generate"
+        self.auth_url = "https://api.proxyapi.co.ke/sandbox/mpesa/v1/auth"
         self.c2b_url = ""
 
 
@@ -16,15 +18,19 @@ class Mpesa:
 
         row_token = f"{current_app.config['MPESA_KEY']}:{current_app.config['MPESA_SECRET']}".encode('utf-8')
 
-        token = base64.b64encode(row_token).decode('utf-8')
+        token = hashlib.sha3_256(row_token).hexdigest()
 
-        headers = {"Authorization": f"Basic {token}", "Content-Type":"Application/json"}
+        headers = {
 
-        options = {"grant_type":"client_credentials"}
+            "HOST":"api.proxyapi.co.ke",
+            "X-Authorization": f"Basic {token}", 
+            "Content-Type":"Application/json",
+            
+            }
 
-        response = requests.get(self.auth_url, headers=headers, params= options)
+        response = requests.get(self.auth_url, headers=headers)
 
-        return response.json()['access_token']
+        return response.json()['Data']['AccessToken']
 
     def initiate_stk_push(self, phoneNumber):
 

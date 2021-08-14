@@ -10,4 +10,4 @@
 ### **python (Flask)**
 ### **Redis(Message broker)**
 ### **Twilio(Message Notification Service)**
-### **Safaricom(Daraja Api for payment simulations)**
+### **Safaricom(PROXY Api for payment simulations)**
