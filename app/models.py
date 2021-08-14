@@ -279,15 +279,14 @@ class Payment(db.Model):
 
     id = db.Column(db.Integer, primary_key = True)
     timestamp = db.Column(db.DateTime, default = datetime.utcnow)
+    trans_time = db.Column(db.String(65))
     amount = db.Column(db.Numeric(10, 2))
-    description = db.Column(db.Text)
+    trans_id = db.Column(db.Text)
     reference = db.Column(db.Text)
     first_name = db.Column(db.String(64))
     middle_name = db.Column(db.String(64))
     last_name = db.Column(db.String(64))
     phone_number = db.Column(db.String(64))
-    organization_balance = db.Column(db.Numeric(10, 2))
-
     user_id = db.Column(db.Integer, db.ForeignKey('users.id'))
 
 
