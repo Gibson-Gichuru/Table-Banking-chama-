@@ -58,6 +58,8 @@ class Development(Config):
 
 class Testing(Config):
 
+    TEST_MSISDN = os.environ.get('TEST_MSISDN')
+
     SQLALCHEMY_DATABASE_URI = os.environ.get(
         'TEST_DATABASE_URL'
     ) or 'sqlite:///' + os.path.join(basedir, 'data-test.sqlite')

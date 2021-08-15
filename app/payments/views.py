@@ -76,11 +76,28 @@ def validation():
     return Response('ok', status=200)
 
 
-@payment.route('/make_payments')
+@payment.route('/make_payments', methods = ['POST'])
 @authentication.login_required()
 def make_payments():
 
     ###make an stk push the users phone
 
-    pass
+    request_data = request.get_json()
+
+    if request_data():
+
+        mpesa = Mpesa()
+
+        stk = mpesa.initiate_stk_push(request_data['phoneNumber'], request_data['amount'])
+
+        if stk.status == 200:
+
+            return Response(jsonify({'message':"confirm the payment your phone"}), status=200)
+
+        else:
+
+            return stk.json()
+
+    return Response(jsonify({"Message":"payment endpoint"}))
+
 

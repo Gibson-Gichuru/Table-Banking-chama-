@@ -11,7 +11,20 @@ class Mpesa:
     def __init__(self):
 
         self.auth_url = "https://api.proxyapi.co.ke/sandbox/mpesa/v1/auth"
-        self.c2b_url = ""
+        self.c2b_url = "https://api.proxyapi.co.ke/sandbox/mpesa/v1/c2b/customerpaybill"
+
+
+    def format_phone_number(self, number):
+
+        formart_number = list(number)
+
+        if formart_number[0] == 0:
+
+            formart_number[0] = "254"
+
+            return "".join(formart_number)
+
+        return "".join(formart_number)
 
 
     def access_token(self):
@@ -32,7 +45,25 @@ class Mpesa:
 
         return response.json()['Data']['AccessToken']
 
-    def initiate_stk_push(self, phoneNumber):
+    def initiate_stk_push(self, phoneNumber, amount):
 
-        pass
+        headers = {
+
+            "HOST":"api.proxyapi.co.ke",
+            "X-Authorization": f"Bearer {self.access_token()}" 
+            }
+
+        body = {
+
+            "SenderMSISDN": self.format_phone_number(phoneNumber),
+            "ReceiverShortcode": current_app.config['BUSINESS_CODE'],
+            "Amount":amount,
+            "AccountReference": "Testing"
+
+        }
+
+        response = requests.post(self.c2b_url, headers = headers, json = body)
+
+        return response
+
 
