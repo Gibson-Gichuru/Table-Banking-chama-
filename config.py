@@ -24,11 +24,18 @@ class Config:
     MAIL_ADMIN = os.environ.get("MAIL_ADMIN")
 
 
+    ##Telebot Config settings
 
+    TELEBOT_TOKEN = os.environ.get('TELEBOT_TOKEN')
+
+    ##MPESA Config setting
+
+    MPESA_KEY = os.environ.get('CONSUMER_KEY')
+    MPESA_SECRET = os.environ.get('CONSUMER_SECRET')
+    BUSINESS_CODE = os.environ.get('BUSINESS_CODE')
 
     ## Common application configuration
 
-    pass
 
 
 class Development(Config):
@@ -50,6 +57,8 @@ class Development(Config):
 
 
 class Testing(Config):
+
+    TEST_MSISDN = os.environ.get('TEST_MSISDN')
 
     SQLALCHEMY_DATABASE_URI = os.environ.get(
         'TEST_DATABASE_URL'

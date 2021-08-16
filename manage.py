@@ -1,14 +1,21 @@
 #Python Standard package importation
-import os, sys
+
+
+import json
+import os, sys, requests
 
 #Flask retaled package importation
 from flask_script import Shell, Manager
 from flask_migrate import Migrate, MigrateCommand
 
+from flask import url_for
+
 #application level parckage importation
 
 from app import create_app, db
-from app.models import User, Role
+from app.models import User, Role, BotActivity, BotCommand
+
+from app.payments.mpesa_utils import Mpesa
 
 ##application initalization 
 
@@ -18,7 +25,7 @@ migrate = Migrate(app, db)
 
 def make_shell_context():
 
-    return dict(User = User, Role = Role, db = db)
+    return dict(User = User, Role = Role, db = db, BotActivity = BotActivity, BotCommand = BotCommand)
 
 
 @manager.command
@@ -30,6 +37,18 @@ def test():
 def deploy():
 
     pass
+@manager.command
+def register_bot():
+
+    url = f"https://api.telegram.org/bot{app.config['TELEBOT_TOKEN']}/setWebhook?url={url_for('bot.bot_callback', _external =True)}"
+
+    response = requests.get(url)
+
+    print(response.json()['description'])
+
+
+
+
 
 
 ## Application commands Registration

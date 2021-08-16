@@ -37,7 +37,11 @@ def create_app(config_name):
 
     ###########PAYMENT BLUEPRINT REGiSTRATION####################
     from .payments import payment as payment_blueprint
-    app.register_blueprint(payment_blueprint, url_prefix = '/payment')
+    app.register_blueprint(payment_blueprint)
+
+    #############TELEGRAM BOT BLUEPRINT REGISTRATION#############
+    from .teleBot import  bot
+    app.register_blueprint(bot, url_prefix= "/bot")
 
 
 
