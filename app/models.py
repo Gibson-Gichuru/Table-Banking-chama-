@@ -112,10 +112,9 @@ class User(db.Model):
     confirmed = db.Column(db.Boolean, default = False)
     phone_number = db.Column(db.String(20))
     role_id = db.Column(db.Integer, db.ForeignKey('roles.id'))
+    tele_username = db.Column(db.String(64))
 
     #RELATIONSHIP
-
-    bot_command = db.relationship("BotActivity", backref = "user", lazy = "dynamic")
 
     payment = db.relationship("Payment", backref='payer', lazy = 'dynamic')
 
@@ -227,22 +226,19 @@ class BotCommand(db.Model):
 
     #RELATIONSHIPS
 
-    activity = db.relationship("BotActivity", backref = "command", lazy = "dynamic")
-
-    
 
     @staticmethod
     def insert_commands():
 
-        active_commands = ["LEDGER", "PAYMENT", "LOAN", "HISTORY"]
+        active_commands = ["LEDGER", "PAYMENT", "LOAN", "HISTORY", "START", "USE_BOT"]
 
         for c in active_commands:
 
-            command = BotCommand.query.filter_by(name = active_commands[c]).first()
+            command = BotCommand.query.filter_by(name = c).first()
 
-            if command is not None:
+            if command is None:
 
-                command = BotCommand(name = active_commands[c])
+                command = BotCommand(name = c)
 
                 db.session.add(command)
 
@@ -254,22 +250,6 @@ class BotCommand(db.Model):
     def __str__(self):
 
         return f"<Command: {self.name}>"
-
-
-class BotActivity(db.Model):
-
-    __tablename__ = "bot_activity"
-
-    id = db.Column(db.Integer, primary_key = True)
-    user_id = db.Column(db.Integer, db.ForeignKey('users.id'))
-    command_id = db.Column(db.Integer, db.ForeignKey('bot_commands.id'))
-    timestamp = db.Column(db.DateTime, default = datetime.utcnow)
-    finished = db.Column(db.Boolean, default = False)
-
-
-    def _str__(self):
-
-        return f"<Command:>"
 
 
 

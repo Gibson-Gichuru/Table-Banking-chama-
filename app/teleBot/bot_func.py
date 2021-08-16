@@ -6,25 +6,64 @@ import re
 
 from app.models import BotCommand
 
+import pdb
+
+PHONE_NUMBER_PATTERN = r"^(07|254)([0-9|7])(\d){7}$"
+USER_NAME_PATTERN = r"^[a-zA-Z_.-]*$"
+
+def parse_msg_args(msg, pattern):
+
+    ticker = re.findall(pattern, msg)
+
+    if ticker:
+        return ticker[0]
+
+    return None
+
 
 def parse_message(message):
 
     chat_id = message["message"]["chat"]["id"]
     msg_text = message["message"]["text"]
+    sender_id = message['message']['from']['id']
+    sender_name = message['message']['from']['first_name']
 
-    pattern = r"/[a-zA-Z]{2,12}"
+    pattern = r"^/[a-zA-Z_.-]*$"
 
     ticker = re.findall(pattern, msg_text)
 
     if ticker:
-
+    
         command = ticker[0].strip("/")
+
 
         bot_command = BotCommand.query.filter_by(name = command.upper()).first()
 
-        return chat_id, bot_command
+        if command.upper() == "USE_BOT":
 
-    return chat_id, None
+            global USER_NAME_PATTERN
+
+            chama_username = parse_msg_args(msg_text, USER_NAME_PATTERN)
+
+            return chat_id, bot_command, sender_id, sender_name, chama_username, None
+            
+
+        if command.upper() == "PAYMENT":
+
+            global PHONE_NUMBER_PATTERN
+
+            phone_number = parse_msg_args(msg_text, PHONE_NUMBER_PATTERN)
+
+            return chat_id, bot_command, sender_id, sender_name, None, phone_number
+
+        return chat_id, bot_command, sender_id, sender_name, None, None
+
+    else:
+
+        return chat_id, None, sender_id, sender_name, None, None
+
+
+
 
 
 def send_message(chat_id,message,token):

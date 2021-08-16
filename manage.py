@@ -13,7 +13,7 @@ from flask import url_for
 #application level parckage importation
 
 from app import create_app, db
-from app.models import User, Role, BotActivity, BotCommand
+from app.models import User, Role, BotCommand
 
 from app.payments.mpesa_utils import Mpesa
 
@@ -25,7 +25,7 @@ migrate = Migrate(app, db)
 
 def make_shell_context():
 
-    return dict(User = User, Role = Role, db = db, BotActivity = BotActivity, BotCommand = BotCommand)
+    return dict(User = User, Role = Role, db = db, BotCommand = BotCommand)
 
 
 @manager.command
