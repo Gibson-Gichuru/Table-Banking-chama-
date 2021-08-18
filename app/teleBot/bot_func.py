@@ -6,19 +6,19 @@ import re
 
 from app.models import BotCommand
 
-import pdb
 
-PHONE_NUMBER_PATTERN = r"^(07|254)([0-9|7])(\d){7}$"
-USER_NAME_PATTERN = r"^[a-zA-Z_.-]*$"
+PHONE_NUMBER_PATTERN = r"^(07|254)([0-9|7])(\d){7}"
+USER_NAME_PATTERN = r"/[a-zA-z_]+@[a-zA-z0-9/-_]+"
 
-def parse_msg_args(msg, pattern):
+def parse_msg_args(msg, pattern, white_out):
 
     ticker = re.findall(pattern, msg)
 
-    if ticker:
-        return ticker[0]
+    if not ticker:
 
-    return None
+        return None
+
+    return ticker[0].strip(f"/{white_out}@")
 
 
 def parse_message(message):
@@ -28,7 +28,7 @@ def parse_message(message):
     sender_id = message['message']['from']['id']
     sender_name = message['message']['from']['first_name']
 
-    pattern = r"^/[a-zA-Z_.-]*$"
+    pattern = r"^/[a-zA-Z_.-]+"
 
     ticker = re.findall(pattern, msg_text)
 
@@ -43,7 +43,7 @@ def parse_message(message):
 
             global USER_NAME_PATTERN
 
-            chama_username = parse_msg_args(msg_text, USER_NAME_PATTERN)
+            chama_username = parse_msg_args(msg_text, USER_NAME_PATTERN, command)
 
             return chat_id, bot_command, sender_id, sender_name, chama_username, None
             
@@ -52,7 +52,7 @@ def parse_message(message):
 
             global PHONE_NUMBER_PATTERN
 
-            phone_number = parse_msg_args(msg_text, PHONE_NUMBER_PATTERN)
+            phone_number = parse_msg_args(msg_text, PHONE_NUMBER_PATTERN, command)
 
             return chat_id, bot_command, sender_id, sender_name, None, phone_number
 

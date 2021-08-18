@@ -9,6 +9,8 @@ from app.models import User
 
 from app import db
 
+import pdb
+
 
 @bot.route("/telebot", methods=['POST'])
 def bot_callback():
@@ -16,6 +18,7 @@ def bot_callback():
     msg = request.get_json()
 
     chat_id, command, msg_sender_id, msg_sender, chama_username, phone_number = parse_message(msg)
+
 
     if command is not None:
 
@@ -40,9 +43,7 @@ def bot_callback():
 
         elif command.name == "USE_BOT":
 
-            username = parse_message(message = msg)[-1]
-
-            if username is None:
+            if chama_username is None:
 
                 send_message(
 
@@ -53,7 +54,7 @@ def bot_callback():
 
                 return Response('ok', status = 200)
 
-            user = User.query.filter_by(username = username).first()
+            user = User.query.filter_by(username = chama_username).first()
 
             if user is None:
 
