@@ -1,14 +1,18 @@
 import requests
-from flask import current_app
+from requests.auth import HTTPBasicAuth
+from flask import current_app, url_for
 
 import re
 
 
 from app.models import BotCommand
 
+import pdb
 
-PHONE_NUMBER_PATTERN = r"^(07|254)([0-9|7])(\d){7}"
+
+PHONE_NUMBER_PATTERN = r"/[a-zA-z_]+@(\+?254|0)(7)([0-9]{8})"
 USER_NAME_PATTERN = r"/[a-zA-z_]+@[a-zA-z0-9/-_]+"
+AMOUNT_PATTERN = r"/[a-zA-Z_-]+@[0-9]+"
 
 def parse_msg_args(msg, pattern, white_out):
 
@@ -23,7 +27,8 @@ def parse_msg_args(msg, pattern, white_out):
 
 def parse_message(message):
 
-    chat_id = message["message"]["chat"]["id"]
+
+    chat_id = message['message']["chat"]["id"]
     msg_text = message["message"]["text"]
     sender_id = message['message']['from']['id']
     sender_name = message['message']['from']['first_name']
@@ -50,11 +55,11 @@ def parse_message(message):
 
         if command.upper() == "PAYMENT":
 
-            global PHONE_NUMBER_PATTERN
+            global AMOUNT_PATTERN
 
-            phone_number = parse_msg_args(msg_text, PHONE_NUMBER_PATTERN, command)
+            amount = parse_msg_args(msg_text, AMOUNT_PATTERN, command)
 
-            return chat_id, bot_command, sender_id, sender_name, None, phone_number
+            return chat_id, bot_command, sender_id, sender_name, None, amount
 
         return chat_id, bot_command, sender_id, sender_name, None, None
 
@@ -75,6 +80,14 @@ def send_message(chat_id,message,token):
     response = requests.post(url, json = payload)
 
     return response
+
+
+
+def get_bot_Access_token(email, password):
+
+    response = requests.get(url=url_for('auth.token', _external = True), auth = HTTPBasicAuth(email, password))
+
+    return response.json()['token']
 
 
 

@@ -45,6 +45,13 @@ def confirmation():
 
             new_pay.payer = user
 
+            task = user.get_task_in_progress(name = "initiate_stk")
+
+            if task is not None:
+
+                task.complete = True
+                db.session.add(task)
+
             db.session.add(new_pay)
 
             db.session.commit()
@@ -88,7 +95,7 @@ def make_payments():
 
         mpesa = Mpesa()
 
-        stk = mpesa.initiate_stk_push(request_data['phoneNumber'], request_data['amount'])
+        stk = mpesa.initiate_stk_push(request_data['PhoneNumber'], request_data['Amount'])
 
         if stk.status == 200:
 

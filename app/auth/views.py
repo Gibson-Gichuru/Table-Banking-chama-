@@ -24,7 +24,7 @@ def verify_password(email_or_token, password):
 
     if password == "":
 
-        g.current_user = User.query.filter_by(email = email_or_token).first()
+        g.current_user = User.verify_auth_token(email_or_token)
         g.token_used = True
 
         return g.current_user is not None
@@ -36,17 +36,15 @@ def verify_password(email_or_token, password):
         return False
 
     g.current_user = user 
-    g.toke_used = False
+    g.token_used = False
 
-    return user.verify_password(email_or_token)
+    return user.verify_password(password)
 
 
 @auth.route('/register', methods = ["POST"])
 def register():
 
     request_body = request.get_json()
-
-    pdb.set_trace()
 
     if not request_body:
 
@@ -94,7 +92,7 @@ def register():
 
     return jsonify(response)
     
-@auth.route("/token", methods = ["POST"])
+@auth.route("/token")
 @authentication.login_required
 def token():
     
@@ -122,6 +120,5 @@ def confirm(token):
 
     return jsonify({"Message":"Something unexpected went wrong please try again later"}), 500
     
-
 
 

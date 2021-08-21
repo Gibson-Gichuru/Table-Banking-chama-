@@ -5,6 +5,8 @@ import base64
 
 import hashlib
 
+import os
+
 
 class Mpesa:
 
@@ -29,7 +31,7 @@ class Mpesa:
 
     def access_token(self):
 
-        row_token = f"{current_app.config['MPESA_KEY']}:{current_app.config['MPESA_SECRET']}".encode('utf-8')
+        row_token = f"{os.environ.get('CONSUMER_KEY')}:{os.environ.get('CONSUMER_SECRET')}".encode('utf-8')
 
         token = hashlib.sha3_256(row_token).hexdigest()
 
@@ -56,8 +58,8 @@ class Mpesa:
         body = {
 
             "SenderMSISDN": self.format_phone_number(phoneNumber),
-            "ReceiverShortcode": current_app.config['BUSINESS_CODE'],
-            "Amount":amount,
+            "ReceiverShortcode": os.environ.get('BUSINESS_CODE'),
+            "Amount":int(amount),
             "AccountReference": "Testing"
 
         }
