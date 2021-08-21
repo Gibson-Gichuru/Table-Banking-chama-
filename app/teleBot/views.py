@@ -15,7 +15,7 @@ import requests
 
 from .bot_func import get_bot_Access_token
 
-import pdb
+
 
 
 @bot.route("/telebot", methods=['POST'])

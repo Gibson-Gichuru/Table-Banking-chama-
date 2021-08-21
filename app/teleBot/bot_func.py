@@ -7,8 +7,6 @@ import re
 
 from app.models import BotCommand
 
-import pdb
-
 
 PHONE_NUMBER_PATTERN = r"/[a-zA-z_]+@(\+?254|0)(7)([0-9]{8})"
 USER_NAME_PATTERN = r"/[a-zA-z_]+@[a-zA-z0-9/-_]+"
