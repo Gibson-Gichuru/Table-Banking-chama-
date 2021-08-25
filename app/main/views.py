@@ -44,10 +44,10 @@ def join():
 
         return render_template('register.html', form = form)
 
-    return render_template("register.html", form  = form)
+    return render_template("register.html", form = form)
 
 
-@main.route("/confirm")
-def confirm():
+@main.route("/confirm/<token>")
+def confirm(token):
 
-    pass
+    return render_template("confirm.html")
