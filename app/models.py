@@ -10,6 +10,8 @@ from itsdangerous import TimedJSONWebSignatureSerializer as Serializer
 
 from flask import current_app
 
+
+#user session call back function
 class Permissions:
 
     PAYMENT=0X02
@@ -175,7 +177,8 @@ class User(db.Model):
 
         return s.dumps({'Confirm': self.id})
 
-    def confirm(self, token):
+    @staticmethod
+    def confirm(token):
 
         s= Serializer(current_app.config['SECRET_KEY'])
 
@@ -186,12 +189,17 @@ class User(db.Model):
 
             return False
 
-        if data.get('Confirm') != self.id:
+        user = User.query.get(data['Confirm'])
+
+        if user is None:
 
             return False
-        self.confirmed = True
 
-        db.session.add(self)
+        user.confirmed = True
+
+        db.session.add(user)
+
+        db.session.commit()
 
         return True
 

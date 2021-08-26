@@ -1,4 +1,5 @@
 from flask import render_template, flash, redirect
+import flask
 from flask.helpers import url_for
 from . import main
 
@@ -9,7 +10,6 @@ from app.models import User
 from app import db
 
 from app.email import send_email
-
 
 
 
@@ -29,7 +29,7 @@ def join():
 
         db.session.add(user)
 
-        db.commit()
+        db.session.commit()
 
         send_email(
             user.email,
@@ -49,5 +49,13 @@ def join():
 
 @main.route("/confirm/<token>")
 def confirm(token):
+
+    if User.confirm(token):
+
+        flash("Account Now Confirmed")
+
+    else:
+
+        flash("Unable To confirm account")
 
     return render_template("confirm.html")
