@@ -59,3 +59,29 @@ class RegistrationForm(FlaskForm):
         if User.query.filter_by(username=field.data).first():
 
             raise ValidationError("Username aready in use")
+
+
+
+class FogotPasswordForm(FlaskForm):
+
+    email = StringField("email", validators=[DataRequired(), Length(1, 64), Email()])
+
+    submit = SubmitField("Register")
+
+class PasswordRestForm(FlaskForm):
+
+    password = PasswordField(
+        "password",
+        validators=[
+            DataRequired(),
+            EqualTo("password2", message="password must match"),
+        ],
+    )
+
+    password2 = PasswordField("confirm password", validators=[DataRequired()])
+
+
+    submit = SubmitField("Reset")
+
+
+

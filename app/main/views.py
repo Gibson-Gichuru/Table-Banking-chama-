@@ -3,7 +3,7 @@ import flask
 from flask.helpers import url_for
 from . import main
 
-from .form import  RegistrationForm
+from .form import  RegistrationForm, FogotPasswordForm, PasswordRestForm
 
 from app.models import User
 
@@ -34,7 +34,7 @@ def join():
         send_email(
             user.email,
             "account Creation", 
-            "email", 
+            "email/email", 
             token = user.generate_confirmation_token(), 
             user = user
             
@@ -59,3 +59,51 @@ def confirm(token):
         flash("Unable To confirm account")
 
     return render_template("confirm.html")
+
+
+@main.route("/forgot_password", methods=["POST", "GET"])
+def forgot_password():
+
+    form = FogotPasswordForm()
+
+    if form.validate_on_submit():
+
+        user = User.query.filter_by(email = form.email.data).first()
+
+        if user is None:
+
+            flash("Email Not Registered")
+
+
+        send_email(
+            user.email, 
+            "Account Password Reset",
+            "email/password", 
+            user = user, 
+            token = user.generate_reset_token()
+            )
+
+        flash(f"Reset Password Link Sent to {user.email}")
+
+    return render_template('forgot_password.html', form = form)
+
+
+@main.route("/confirm/password/reset/<token>", methods = ["POST", "GET"])
+def confirm_reset(token):
+
+    form = PasswordRestForm()
+
+    if form.validate_on_submit():
+
+        if User.reset_password(token, form.password.data):
+
+            flash("Password reset Successfull")
+
+            return render_template("password_reset.html", form = form)
+
+        else:
+
+            flash("Password reset Failed")
+            return render_template("password_reset.html", form = form)
+
+    return render_template('password_reset.html', form = form)
