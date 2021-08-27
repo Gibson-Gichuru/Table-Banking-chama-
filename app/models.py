@@ -192,6 +192,20 @@ class User(db.Model):
     @staticmethod
     def verify_auth_token(token):
 
+        s= Serializer(current_app.config['SECRET_APP'])
+
+        try:
+
+            data = s.dumps(token)
+
+        except:
+
+            return None
+
+        return User.query.get(data['id'])
+
+
+
     def generate_reset_token(self,expiration = 3600):
 
         s = Serializer(current_app.config['SECRET_KEY'], expires_in=expiration)
@@ -210,6 +224,22 @@ class User(db.Model):
             data = s.loads(token)
 
         except:
+
+            return False
+
+        user = User.query.get(data['reset'])
+
+        if user is None:
+
+            return False
+
+        user.password = new_pasword
+
+        db.session.add(user)
+
+        db.session.commit()
+
+        return True
 
     @staticmethod
     def confirm(token):

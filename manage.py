@@ -17,6 +17,8 @@ from app.models import User, Role, BotCommand, Task
 
 from app.payments.mpesa_utils import Mpesa
 
+from flask_migrate import upgrade
+
 ##application initalization 
 
 app = create_app(os.environ.get('FLASK_CONFIG') or 'default')
@@ -36,7 +38,17 @@ def test():
 @manager.command
 def deploy():
 
-    pass
+    # update  database schema to the database
+
+    upgrade()
+
+    ## setup the user roles
+    Role.insert_roles()
+
+    ## setup the telegram bot user commands
+
+    BotCommand.insert_commands()
+    
 @manager.command
 def register_bot():
 

@@ -1,0 +1,4 @@
+-r requirements/common.txt
+urllib3==1.26.6
+certifi==2021.5.30
+charset-normalizer==2.0.4
