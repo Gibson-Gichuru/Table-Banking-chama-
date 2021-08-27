@@ -163,8 +163,6 @@ class Heroku(Production):
     SSL_DISABLE = bool(os.environ.get('SSL_DISABLE'))
 
 
-
-
 config = {
             'development':Development, 
             'production':Production,
