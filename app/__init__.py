@@ -1,10 +1,15 @@
 from flask import Flask
+from flask.globals import current_app
 
 from flask_sqlalchemy import SQLAlchemy
 from flask_marshmallow import Marshmallow
 from flask_mail import Mail
 
 from config import config
+
+from redis import Redis, connection
+
+import rq
 
 ##dependencies module initialization
 
@@ -19,6 +24,10 @@ def create_app(config_name):
     app = Flask(__name__)
     app.config.from_object(config[config_name])
     config[config_name].init_app(app)
+
+    app.redis = Redis.from_url(app.config['REDIS_URL'])
+
+    app.task_queue = rq.Queue('chama-tasks', connection = app.redis)
 
 
     #module integration with the application

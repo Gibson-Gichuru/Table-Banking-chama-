@@ -26,6 +26,8 @@ class Config:
     ##Telebot Config settings
 
     TELEBOT_TOKEN = os.environ.get('TELEBOT_TOKEN')
+    BOT_EMAIL = os.environ.get('BOT_EMAIL')
+    BOT_PASS = os.environ.get('BOT_PASS')
 
     ##MPESA Config setting
 
@@ -34,6 +36,11 @@ class Config:
     BUSINESS_CODE = os.environ.get('BUSINESS_CODE')
 
     ## Common application configuration
+
+
+    ## Redis Config
+
+    REDIS_URL = os.environ.get('REDIS_URL') or 'redis://'
 
 
 

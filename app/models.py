@@ -10,8 +10,13 @@ from itsdangerous import TimedJSONWebSignatureSerializer as Serializer
 
 from flask import current_app
 
+import redis
 
-#user session call back function
+import rq
+
+from sqlalchemy import desc
+
+
 class Permissions:
 
     PAYMENT=0X02
@@ -114,12 +119,13 @@ class User(db.Model):
     confirmed = db.Column(db.Boolean, default = False)
     phone_number = db.Column(db.String(20))
     role_id = db.Column(db.Integer, db.ForeignKey('roles.id'))
+    tele_username = db.Column(db.String(64), default = None)
 
     #RELATIONSHIP
 
-    bot_command = db.relationship("BotActivity", backref = "user", lazy = "dynamic")
-
     payment = db.relationship("Payment", backref='payer', lazy = 'dynamic')
+
+    task = db.relationship('Task', backref = "user", lazy = 'dynamic')
 
 
     """When an instance of this class is made check if the email passed equal to the stored admin email
@@ -177,6 +183,15 @@ class User(db.Model):
 
         return s.dumps({'Confirm': self.id})
 
+    def generate_auth_token(self, expiration = 3600):
+
+        s = Serializer(current_app.config['SECRET_KEY'], expires_in= expiration)
+
+        return s.dumps({'id':self.id}).decode('utf-8')
+
+    @staticmethod
+    def verify_auth_token(token):
+
     def generate_reset_token(self,expiration = 3600):
 
         s = Serializer(current_app.config['SECRET_KEY'], expires_in=expiration)
@@ -187,6 +202,7 @@ class User(db.Model):
     @staticmethod
     def reset_password(token, new_pasword):
 
+
         s = Serializer(current_app.config['SECRET_KEY'])
 
         try:
@@ -194,22 +210,6 @@ class User(db.Model):
             data = s.loads(token)
 
         except:
-
-            return False
-
-        user = User.query.get(data['reset'])
-
-        if user is None:
-
-            return False
-
-        user.password = new_pasword
-
-        db.session.add(user)
-
-        db.session.commit()
-
-        return True
 
     @staticmethod
     def confirm(token):
@@ -254,10 +254,29 @@ class User(db.Model):
         return self.can(Permissions.ADMINISTER)
 
 
+    def lauch_task(self, name, description, *args, **kwargs):
+
+        rq_job = current_app.task_queue.enqueue('app.tasks.'+name, *args, **kwargs)
+
+        task = Task(id = rq_job.get_id(), name = name, description = description, user = self)
+
+        db.session.add(task)
+
+        db.session.commit()
+
+        return task
+
+    def get_tasks_in_progress(self):
+
+        return Task.query.filter_by(user=self, complete=False).all()
+
+    def get_task_in_progress(self, name):
+
+        return Task.query.filter_by(name=name, user=self, complete=False).order_by(desc(Task.time_stamp)).first()
+
 
     def __str__(self) -> str:
         return f"<User:{self.username}>"
-
 
 
 class BotCommand(db.Model):
@@ -269,22 +288,19 @@ class BotCommand(db.Model):
 
     #RELATIONSHIPS
 
-    activity = db.relationship("BotActivity", backref = "command", lazy = "dynamic")
-
-    
 
     @staticmethod
     def insert_commands():
 
-        active_commands = ["LEDGER", "PAYMENT", "LOAN", "HISTORY"]
+        active_commands = ["LEDGER", "PAYMENT", "LOAN", "HISTORY", "START", "USE_BOT"]
 
         for c in active_commands:
 
-            command = BotCommand.query.filter_by(name = active_commands[c]).first()
+            command = BotCommand.query.filter_by(name = c).first()
 
-            if command is not None:
+            if command is None:
 
-                command = BotCommand(name = active_commands[c])
+                command = BotCommand(name = c)
 
                 db.session.add(command)
 
@@ -296,22 +312,6 @@ class BotCommand(db.Model):
     def __str__(self):
 
         return f"<Command: {self.name}>"
-
-
-class BotActivity(db.Model):
-
-    __tablename__ = "bot_activity"
-
-    id = db.Column(db.Integer, primary_key = True)
-    user_id = db.Column(db.Integer, db.ForeignKey('users.id'))
-    command_id = db.Column(db.Integer, db.ForeignKey('bot_commands.id'))
-    timestamp = db.Column(db.DateTime, default = datetime.utcnow)
-    finished = db.Column(db.Boolean, default = False)
-
-
-    def _str__(self):
-
-        return f"<Command:>"
 
 
 
@@ -330,5 +330,32 @@ class Payment(db.Model):
     last_name = db.Column(db.String(64))
     phone_number = db.Column(db.String(64))
     user_id = db.Column(db.Integer, db.ForeignKey('users.id'))
+
+
+class Task(db.Model):
+
+    __tablename__ = 'tasks'
+
+    id = db.Column(db.String(38), primary_key=True)
+    name = db.Column(db.String(128), index=True)
+    description = db.Column(db.String(128))
+    user_id = db.Column(db.Integer, db.ForeignKey('users.id'))
+    complete = db.Column(db.Boolean, default=False)
+    time_stamp = db.Column(db.DateTime, default = datetime.utcnow)
+
+
+    def get_rq_job(self):
+
+        try:
+
+            rq_job = rq.job.Job.Fetch(self.id, connection=current_app.redis)
+
+        except (redis.exceptions.RedisError, rq.exceptions.NoSuchJobError):
+
+            return None
+
+        return rq_job
+
+
 
 
