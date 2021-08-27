@@ -42,7 +42,7 @@ class Config:
 
     REDIS_URL = os.environ.get('REDIS_URL') or 'redis://'
 
-    @classmethod
+    @staticmethod
     def init_app(app):
 
         pass
@@ -66,7 +66,7 @@ class Development(Config):
     ) or 'sqlite:///' + os.path.join(basedir, 'data-dev.sqlite')
 
 
-    @classmethod
+    @staticmethod
     def init_app(app):
 
         pass
@@ -80,7 +80,7 @@ class Testing(Config):
         'TEST_DATABASE_URL'
     ) or 'sqlite:///' + os.path.join(basedir, 'data-test.sqlite')
 
-    @classmethod
+    @staticmethod
     def init_app(app):
 
         pass
