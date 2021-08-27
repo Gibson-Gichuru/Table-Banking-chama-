@@ -168,5 +168,6 @@ class Heroku(Production):
 config = {
             'development':Development, 
             'production':Production,
-            'default':Development
+            'default':Development,
+            'heroku':Heroku,
         }
