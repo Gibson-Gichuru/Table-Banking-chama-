@@ -19,8 +19,7 @@ class Config:
 
     MAIL_SUBJECT_PREFIX = "CHAMA-APP"
     MAIL_SENDER = os.environ.get("MAIL_ADMIN")
-    MAIL_USERNAME = os.environ.get('MAIL_USERNAME')
-    MAIL_PASSWORD = os.environ.get('MAIL_PASSWORD')
+    
     MAIL_ADMIN = os.environ.get("MAIL_ADMIN")
 
 
@@ -48,10 +47,11 @@ class Config:
 class Development(Config):
 
     #Development Specific configurations
-
-    MAIL_SERVER = "smtp.googlemail.com"
+    MAIL_SERVER = 'smtp.googlemail.com'
     MAIL_PORT = 587
-    MAIL_USER_TLS = True
+    MAIL_USE_TLS = True
+    MAIL_USERNAME = os.environ.get('MAIL_USERNAME')
+    MAIL_PASSWORD = os.environ.get('MAIL_PASSWORD')
 
 
     SQLALCHEMY_DATABASE_URI = os.environ.get(

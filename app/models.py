@@ -16,6 +16,7 @@ import rq
 
 from sqlalchemy import desc
 
+
 class Permissions:
 
     PAYMENT=0X02
@@ -182,7 +183,6 @@ class User(db.Model):
 
         return s.dumps({'Confirm': self.id})
 
-
     def generate_auth_token(self, expiration = 3600):
 
         s = Serializer(current_app.config['SECRET_KEY'], expires_in= expiration)
@@ -191,6 +191,18 @@ class User(db.Model):
 
     @staticmethod
     def verify_auth_token(token):
+
+    def generate_reset_token(self,expiration = 3600):
+
+        s = Serializer(current_app.config['SECRET_KEY'], expires_in=expiration)
+
+        return s.dumps({'reset':self.id})
+
+
+    @staticmethod
+    def reset_password(token, new_pasword):
+
+
         s = Serializer(current_app.config['SECRET_KEY'])
 
         try:
@@ -199,11 +211,8 @@ class User(db.Model):
 
         except:
 
-            return None
-
-        return User.query.get(data['id'])
-
-    def confirm(self, token):
+    @staticmethod
+    def confirm(token):
 
         s= Serializer(current_app.config['SECRET_KEY'])
 
@@ -214,12 +223,17 @@ class User(db.Model):
 
             return False
 
-        if data.get('Confirm') != self.id:
+        user = User.query.get(data['Confirm'])
+
+        if user is None:
 
             return False
-        self.confirmed = True
 
-        db.session.add(self)
+        user.confirmed = True
+
+        db.session.add(user)
+
+        db.session.commit()
 
         return True
 

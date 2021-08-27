@@ -17,6 +17,7 @@ db = SQLAlchemy()
 ma = Marshmallow()
 mail = Mail()
 
+
 def create_app(config_name):
 
     #Application setup and enviroment setup

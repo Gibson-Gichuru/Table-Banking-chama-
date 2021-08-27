@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
+    <title> | Chama Simple App</title>
+
+    <!-- Bootstrap -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.0/dist/css/bootstrap.min.css" 
+    integrity="sha384-KyZXEAg3QhqLMpG8r+8fhAXLRk2vvoC2f3B09zVXn8CA5QIVfZOJ3BCsw2P0p/We" crossorigin="anonymous">
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename = '/styles.css')}}">
+  </head>
+  <body>
+    <div class="container">
+      <div class="row">
+        <div class="col-lg-10 col-xl-9 mx-auto">
+          <div class="card flex-row my-5 border-0 shadow rounded-3 overflow-hidden">
+            <div class="card-img-left d-none d-md-flex">
+              <!-- Background image for card set in CSS! -->
+            </div>
+            <div class="card-body p-4 p-sm-5">
+              <h5 class="card-title text-center mb-5 fw-light fs-5">Register To Chama Round Table</h5>
+              <div>
+                {% with messages = get_flashed_messages(with_categories=true) %}
+                    {% if messages %}
+                      {% for category, message in messages %}
+                          {% if category == 'message' %}
+                            <div class="alert alert-warning" role="alert">
+                          {% else %}
+                            <div class="alert alert-{{ category }}" role="alert">
+                          {% endif %}
+                            {{ message }}
+                          </div>
+                      {% endfor %}
+                    {% endif %}
+                {% endwith %}
+              </div>
+              <form method="POST", action="{{ url_for('main.join')}}">
+
+                {{form.csrf_token}}
+  
+                <div class="form-floating mb-3">
+                  {{form.username(class="form-control", id="floatingInputUsername", placeholder ="username")}}
+                  <label for="floatingInputUsername">Username</label>
+                </div>
+  
+                <div class="form-floating mb-3">
+                  {{form.email(class="form-control", id="floatingInputEmail", placeholder ="name@example.com")}}
+                  <label for="floatingInputEmail">Email address</label>
+              
+                </div>
+
+                <div class="form-floating mb-3">
+                  {{form.phonenumber(class="form-control", id="floatingPasswordConfirm", placeholder ="07XXXX or 254XXXX")}}
+                  <label for="floatingPasswordConfirm">Phone Number</label>
+                </div>
+  
+                <hr>
+  
+                <div class="form-floating mb-3">
+                  {{form.password(class="form-control", id="floatingPassword", placeholder ="Password")}}
+                  <label for="floatingPassword">Password</label>
+                </div>
+  
+                <div class="form-floating mb-3">
+                  {{form.password2(class="form-control", id="floatingPassword", placeholder ="Confirm Password")}}
+                  <label for="floatingPasswordConfirm">Confirm Password</label>
+                </div>
+
+              
+                <div class="d-grid mb-2">
+              
+                  <button class="btn btn-lg btn-primary btn-login fw-bold text-uppercase" type="submit">Register</button>
+                </div>
+              </form>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </body>
+</html>
