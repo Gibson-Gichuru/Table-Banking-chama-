@@ -5,7 +5,7 @@ basedir = os.path.abspath(os.path.dirname(__file__))
 
 class Config:
 
-    load_dotenv()
+    
 
     DEBUG = True
     SECRET_KEY = os.environ.get("SECRET_KEY")
@@ -46,6 +46,8 @@ class Config:
 
 class Development(Config):
 
+    load_dotenv()
+
     #Development Specific configurations
     MAIL_SERVER = 'smtp.googlemail.com'
     MAIL_PORT = 587
@@ -58,6 +60,8 @@ class Development(Config):
         'TEST_DATABASE_URL'
     ) or 'sqlite:///' + os.path.join(basedir, 'data-dev.sqlite')
 
+
+    @classmethod
     def init_app(app):
 
         pass
@@ -71,7 +75,8 @@ class Testing(Config):
         'TEST_DATABASE_URL'
     ) or 'sqlite:///' + os.path.join(basedir, 'data-test.sqlite')
 
-    def inti_app(app):
+    @classmethod
+    def init_app(app):
 
         pass
 
@@ -79,7 +84,33 @@ class Testing(Config):
 class Production(Config):
     # Production Specific configuration
 
-    pass
+    MAIL_SERVER = 'smtp.googlemail.com'
+    MAIL_PORT = 587
+    MAIL_USE_TLS = True
+    MAIL_USERNAME = os.environ.get('MAIL_USERNAME')
+    MAIL_PASSWORD = os.environ.get('MAIL_PASSWORD')
+
+    SQLALCHEMY_DATABASE_URL = os.environ.get("DATABASE_URL").replace("://", "ql://", 1) or \
+    "sqlite:///" + os.path.join(basedir, 'data.sqlite')
+
+
+    @classmethod
+    def init_app(app):
+
+        """Enable On production Error Logging and send the logfiles to the admin email"""
+
+        pass
+
+
+class Heroku(Production):
+
+    @classmethod
+    def init_app(cls,app):
+        
+        pass
+    
+
+
 
 config = {
             'development':Development, 
