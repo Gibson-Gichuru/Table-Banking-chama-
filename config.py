@@ -6,7 +6,7 @@ basedir = os.path.abspath(os.path.dirname(__file__))
 class Config:
 
     
-
+    SSL_DISABLE = True
     DEBUG = True
     SECRET_KEY = os.environ.get("SECRET_KEY")
     SQLALCHEMY_COMMITON_TEARDOWN = True
