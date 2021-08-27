@@ -42,6 +42,11 @@ class Config:
 
     REDIS_URL = os.environ.get('REDIS_URL') or 'redis://'
 
+    @classmethod
+    def init_app(app):
+
+        pass
+
 
 
 class Development(Config):
@@ -95,11 +100,42 @@ class Production(Config):
 
 
     @classmethod
-    def init_app(app):
+    def init_app(cls, app):
 
         """Enable On production Error Logging and send the logfiles to the admin email"""
 
-        pass
+        Config.init_app(app)
+
+        import logging
+
+        from logging.handlers import SMTPHandler
+
+        secure = None
+
+        credentials = None
+
+        if getattr(cls, "MAIL_USERNAME", None) is not None:
+
+            credentials = (cls.MAIL_USERNAME, cls.MAIL_PASSWORD)
+
+            if getattr(cls, 'MAIL_USE_TLS, None'):
+
+                secure = ()
+
+        mail_handler = SMTPHandler(
+
+            mailhost=(cls.MAIL_SERVER, cls.MAIL_PORT),
+            fromaddr=cls.MAIL_SENDER,
+            toaddrs=[cls.MAIL_ADMIN],
+            subject=cls.MAIL_SUBJECT_PREFIX + "Application Error",
+            credentials=credentials,
+            secure=secure
+        )
+
+        mail_handler.setLevel(logging.WARNING)
+
+        app.logger.addHandler(mail_handler)
+
 
 
 class Heroku(Production):
@@ -107,8 +143,25 @@ class Heroku(Production):
     @classmethod
     def init_app(cls,app):
         
-        pass
-    
+        Production.init(app)
+
+        import logging
+
+        from logging import StreamHandler
+
+        file_handler = StreamHandler()
+
+        file_handler.setLevel(logging.WARNING)
+
+        app.logger.addHandler(file_handler)
+
+        from werkzeug.middleware.proxy_fix import ProxyFix
+
+        app.wsgi_app = ProxyFix(app.wsgi_app)
+
+
+    SSL_DISABLE = bool(os.environ.get('SSL_DISABLE'))
+
 
 
 
