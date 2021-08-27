@@ -5,7 +5,7 @@ Thenks For registering With us:
 
 To Confirm your account please click on the following link:
 
-{{ url_for('auth.confirm', token = token, _external = True) }}
+{{ url_for('main.confirm', token = token, _external = True) }}
 
 
 Always at your service.
