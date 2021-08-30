@@ -118,7 +118,7 @@ class Production(Config):
 
             credentials = (cls.MAIL_USERNAME, cls.MAIL_PASSWORD)
 
-            if getattr(cls, 'MAIL_USE_TLS, None'):
+            if getattr(cls, 'MAIL_USE_TLS', None):
 
                 secure = ()
 
