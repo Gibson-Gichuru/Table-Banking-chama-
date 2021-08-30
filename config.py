@@ -143,7 +143,7 @@ class Heroku(Production):
     @classmethod
     def init_app(cls,app):
         
-        Production.init(app)
+        Production.init_app(app)
 
         import logging
 
