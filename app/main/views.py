@@ -13,6 +13,13 @@ from app.email import send_email
 
 
 
+@main.route("/", methods = ["GET"])
+def index():
+
+    return redirect(url_for("main.join"))
+
+
+
 @main.route("/join", methods= ["GET", "POST"])
 def join():
 
