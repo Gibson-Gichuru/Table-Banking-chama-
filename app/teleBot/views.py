@@ -31,7 +31,7 @@ def bot_callback():
 
         if command.name == "START":
 
-            user = User.query.filter_by(tele_username=msg_sender_id).first()
+            user = User.query.filter_by(tele_username=str(msg_sender_id)).first()
 
             if user is None:
 
