@@ -114,7 +114,7 @@ def bot_callback():
 
                 return Response('ok', status = 200)
 
-            user = User.query.filter_by(tele_username = msg_sender_id).first()
+            user = User.query.filter_by(tele_username = str(msg_sender_id)).first()
 
             if user is None:
 
