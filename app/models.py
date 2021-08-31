@@ -4,6 +4,9 @@ from enum import unique
 from sqlalchemy.orm import backref
 
 from app import db
+from app import login_manager
+
+from flask_login import UserMixin, AnonymousUserMixin
 
 from werkzeug.security import generate_password_hash, check_password_hash
 from itsdangerous import TimedJSONWebSignatureSerializer as Serializer
@@ -15,6 +18,12 @@ import redis
 import rq
 
 from sqlalchemy import desc
+
+
+@login_manager.user_loader
+def load_user(user_id):
+
+    return User.query.get(int(user_id))
 
 
 class Permissions:
@@ -105,7 +114,7 @@ class Role(db.Model):
 
         return f"<Role:{self.name}>"
 
-class User(db.Model):
+class User(db.Model, UserMixin):
 
     __tablename__ = "users"
 
@@ -385,6 +394,21 @@ class Task(db.Model):
             return None
 
         return rq_job
+
+class AnonymousUser(AnonymousUserMixin):
+
+    def can(self, permissions):
+
+        return False
+
+    def is_administrator(self):
+
+        return False
+
+
+login_manager.anonymous_user = AnonymousUser
+
+
 
 
 

@@ -1,9 +1,9 @@
-from flask import render_template, flash, redirect
-import flask
+from flask import render_template, flash, redirect, request
+from flask_login import login_user, login_required, logout_user, current_user
 from flask.helpers import url_for
 from . import main
 
-from .form import  RegistrationForm, FogotPasswordForm, PasswordRestForm
+from .form import  RegistrationForm, FogotPasswordForm, PasswordRestForm, LoginForm
 
 from app.models import User
 
@@ -11,12 +11,46 @@ from app import db
 
 from app.email import send_email
 
-
-
 @main.route("/", methods = ["GET"])
 def index():
 
-    return redirect(url_for("main.join"))
+    return redirect(url_for("main.login"))
+
+
+@main.route("/login", methods=["GET", "POST"])
+def login():
+
+    form = LoginForm()
+
+    if form.validate_on_submit():
+
+        user = User.query.filter_by(email = form.email.data).first()
+
+        if user is not None and user.verify_password(form.password.data):
+
+            login_user(user, form.remember_me.data)
+
+            next = request.args.get('next')
+
+            if next is None or not next.startswith("/"):
+
+                return redirect(url_for('main.home'))
+
+            return redirect(next)
+
+        else:
+
+            flash("Invalid Email or Password")
+
+    return render_template('login.html', form = form)
+
+
+
+@main.route("/home", methods=["GET", "POST"])
+@login_required
+def home():
+
+    return render_template('home.html')
 
 
 
@@ -114,3 +148,12 @@ def confirm_reset(token):
             return render_template("password_reset.html", form = form)
 
     return render_template('password_reset.html', form = form)
+
+@main.route("/logout")
+@login_required
+def logout():
+
+    logout_user()
+    flash("you have logged out")
+
+    return redirect(url_for("main.index"))

@@ -1,5 +1,5 @@
 {% extends "base.html"%}
-{% block title %}| Forgot Password{% endblock %}
+{% block title %}| Account Login{% endblock %}
 {% block imports %}
 <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename = 'register.css')}}">
 {% endblock %}
@@ -12,7 +12,7 @@
           <!-- Background image for card set in CSS! -->
         </div>
         <div class="card-body p-4 p-sm-5">
-          <h5 class="card-title text-center mb-5 fw-light fs-5">Reset Password</h5>
+          <h5 class="card-title text-center mb-5 fw-light fs-5">Login</h5>
           <form method="POST">
 
             {{ form.csrf_token}}
@@ -23,11 +23,24 @@
 
             <hr>
 
-            <div class="d-grid mb-2">
-              <button class="btn btn-lg btn-primary btn-login fw-bold text-uppercase" type="submit">Reset</button>
+            <div class="form-floating mb-3">
+              {{ form.password(class = "form-control", id ="floatingPassword", placeholder="Password")}}
+              <label for="floatingPassword">Password</label>
+            </div>
+            <div class="form-check mb-3">
+              {{form.remember_me(class="form-check-input", id="rememberPasswordCheck")}}
+              <label class="form-check-label" for="Remember Me!">
+                Remember password
+              </label>
             </div>
 
-            <a class="d-block text-center mt-2 small" href="{{ url_for('main.login')}}">Back and Login</a>
+            <div class="d-grid mb-2">
+              <button class="btn btn-lg btn-primary btn-login fw-bold text-uppercase" type="submit">Login</button>
+            </div>
+
+            <a class="d-block text-center mt-2 small" href="{{ url_for('main.forgot_password')}}">Forgot Password</a>
+
+            <a class="d-block text-center mt-2 small" href="{{ url_for('main.join')}}">Don't have an account? Sign Up</a>
 
           </form>
         </div>
