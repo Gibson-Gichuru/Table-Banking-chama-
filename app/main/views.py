@@ -42,7 +42,7 @@ def login():
 
             flash("Invalid Email or Password")
 
-    return render_template('login.html', form = form)
+    return render_template('auth/login.html', form = form)
 
 
 
@@ -50,7 +50,7 @@ def login():
 @login_required
 def home():
 
-    return render_template('home.html')
+    return render_template('main/home.html')
 
 
 
@@ -83,9 +83,9 @@ def join():
 
         flash(f"Link sent to{user.email}, Confirm your email!", category="message")
 
-        return render_template('register.html', form = form)
+        return render_template('auth/register.html', form = form)
 
-    return render_template("register.html", form = form)
+    return render_template("auth/register.html", form = form)
 
 
 @main.route("/confirm/<token>")
@@ -99,7 +99,7 @@ def confirm(token):
 
         flash("Unable To confirm account")
 
-    return render_template("confirm.html")
+    return render_template("auth/confirm.html")
 
 
 @main.route("/forgot_password", methods=["POST", "GET"])
@@ -126,7 +126,7 @@ def forgot_password():
 
         flash(f"Reset Password Link Sent to {user.email}")
 
-    return render_template('forgot_password.html', form = form)
+    return render_template('auth/forgot_password.html', form = form)
 
 
 @main.route("/confirm/password/reset/<token>", methods = ["POST", "GET"])
@@ -140,14 +140,14 @@ def confirm_reset(token):
 
             flash("Password reset Successfull")
 
-            return render_template("password_reset.html", form = form)
+            return render_template("auth/password_reset.html", form = form)
 
         else:
 
             flash("Password reset Failed")
-            return render_template("password_reset.html", form = form)
+            return render_template("auth/password_reset.html", form = form)
 
-    return render_template('password_reset.html', form = form)
+    return render_template('auth/password_reset.html', form = form)
 
 @main.route("/logout")
 @login_required
@@ -157,3 +157,21 @@ def logout():
     flash("you have logged out")
 
     return redirect(url_for("main.index"))
+
+
+@main.route("/unconfirmed")
+@login_required
+def unconfirmed():
+
+    return render_template('auth/unconfirmed.html')
+
+
+@main.before_app_request
+def before_request():
+
+    if current_user.is_authenticated and  not current_user.confirmed and request.endpoint[:5] != "auth.":
+
+        return redirect(url_for('main.unconfirmed'))
+
+
+
