@@ -1,3 +1,4 @@
+from sqlalchemy.orm import joinedload
 from . import payment
 
 from flask import current_app, url_for, jsonify, Response, request
@@ -70,6 +71,11 @@ def validation():
 
     pay_validation = request.get_json()
 
+    context = {
+        "ResultCode": 0,
+        "ResultDesc": "Accepted"
+    }
+
     if pay_validation:
 
         user = User.query.filter_by(phone_number = pay_validation['SenderMSISDN']).first()
@@ -78,9 +84,14 @@ def validation():
 
             #send_message()
 
-            return Response('cancel', status = 200)
+            context_reject = {
+                "ResultCode": 0,
+                "ResultDesc": "Cancelled"
+            }
 
-    return Response('ok', status=200)
+            return Response(jsonify(context_reject))
+
+    return Response(jsonify(context))
 
 
 @payment.route('/make_payments', methods = ['POST'])

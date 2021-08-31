@@ -4,7 +4,7 @@ from dotenv import load_dotenv
 basedir = os.path.abspath(os.path.dirname(__file__))
 
 class Config:
-
+    
     
     SSL_DISABLE = True
     DEBUG = True
@@ -34,6 +34,9 @@ class Config:
     MPESA_KEY = os.environ.get('CONSUMER_KEY')
     MPESA_SECRET = os.environ.get('CONSUMER_SECRET')
     BUSINESS_CODE = os.environ.get('BUSINESS_CODE')
+    PASS_KEY = os.environ.get('PASS_KEY')
+    CONFIRMATION_URL = os.environ.get('CONFIRMATION_URL')
+    VALIDATION_URL = os.environ.get('VALIDATION_URL')
 
     ## Common application configuration
 
