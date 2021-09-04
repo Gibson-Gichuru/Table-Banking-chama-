@@ -59,9 +59,32 @@ def register_bot():
     print(response.json()['description'])
 
 
+@manager.command
+def mpesa_callbacks():
 
+    from app.payments.mpesa_utils import Mpesa
 
+    mpesa = Mpesa()
 
+    url  = "https://sandbox.safaricom.co.ke/mpesa/c2b/v1/registerurl"
+
+    headers = {
+
+        "HOST":"sandbox.safaricom.co.ke",
+        "Authorization": f"Bearer {mpesa.access_token()}",
+        "Content-Type":"application/json"
+    }
+
+    body  = {
+
+        "ShortCode":app.config['BUSINESS_CODE'],
+        "ResponseType":"Cancelled",
+        "ConfirmationURL":app.config['CONFIRMATION_URL'],
+        "ValidationURL":app.config['VALIDATION_URL']
+    }
+
+    response = requests.post( url=url, headers=headers, json=body)
+    return response.json()
 
 ## Application commands Registration
 
