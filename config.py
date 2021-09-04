@@ -54,8 +54,8 @@ class Config:
 
 class Development(Config):
 
+    
     load_dotenv()
-
     #Development Specific configurations
     MAIL_SERVER = 'smtp.googlemail.com'
     MAIL_PORT = 587

@@ -84,7 +84,6 @@ def mpesa_callbacks():
     }
 
     response = requests.post( url=url, headers=headers, json=body)
-
     return response.json()
 
 ## Application commands Registration
