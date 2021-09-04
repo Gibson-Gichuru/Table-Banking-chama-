@@ -33,14 +33,14 @@ def confirmation():
 
             new_pay = Payment(
 
-                amount = payment_data['TransactionAmount'],
-                trans_id = payment_data['TransactionID'],
+                amount = payment_data['TrasAmount'],
+                trans_id = payment_data['TransID'],
                 reference = payment_data['AccountReference'],
-                first_name = payment_data['SenderFirstName'],
-                middle_name = payment_data['SenderMiddleName'],
-                last_name = payment_data['SenderLastName'],
-                phone_number = payment_data['SenderMSISDN'],
-                trans_time = payment_data['TransactionTime']
+                first_name = payment_data['FirstName'],
+                middle_name = payment_data['MiddleName'],
+                last_name = payment_data['LastName'],
+                phone_number = payment_data['MSISDN'],
+                trans_time = payment_data['TransTime']
 
             )
 
@@ -78,7 +78,7 @@ def validation():
 
     if pay_validation:
 
-        user = User.query.filter_by(phone_number = pay_validation['SenderMSISDN']).first()
+        user = User.query.filter_by(phone_number = pay_validation['MSISDN']).first()
 
         if user is None:
 

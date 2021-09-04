@@ -35,9 +35,9 @@ class Mpesa:
 
         timestamp = datetime.now().strftime("%Y%m%d%H%M%S")
 
-        business_code = current_app.config['BUSINESS_CODE']
+        business_code = os.environ.get('BUSINESS_CODE')
 
-        pass_key = current_app.config['PASS_KEY']
+        pass_key = os.environ.get('PASS_KEY')
 
         row_transaction_pass = business_code + pass_key + timestamp
 
@@ -74,15 +74,15 @@ class Mpesa:
             }
 
         payload = {
-            "BusinessShortCode": current_app.config['BUSINESS_CODE'],
+            "BusinessShortCode": os.environ.get('BUSINESS_CODE'),
             "Password": self.lipa_na_mpesa_password()[0],
             "Timestamp": self.lipa_na_mpesa_password()[1],
             "TransactionType": "CustomerPayBillOnline",
             "Amount": int(amount),
             "PartyA": self.format_phone_number(phoneNumber),
-            "PartyB": current_app.config['BUSINESS_CODE'],
+            "PartyB": os.environ.get('BUSINESS_CODE'),
             "PhoneNumber": self.format_phone_number(phoneNumber),
-            "CallBackURL": current_app.config['CONFIRMATION_URL'],
+            "CallBackURL": os.environ.get('CONFIRMATION_URL'),
             "AccountReference": "CompanyXLTD",
             "TransactionDesc": "Payment of X"
         }

@@ -5,7 +5,7 @@ basedir = os.path.abspath(os.path.dirname(__file__))
 
 class Config:
     
-    
+    load_dotenv()
     SSL_DISABLE = True
     DEBUG = True
     SECRET_KEY = os.environ.get("SECRET_KEY")
@@ -98,8 +98,8 @@ class Production(Config):
     MAIL_USERNAME = os.environ.get('MAIL_USERNAME')
     MAIL_PASSWORD = os.environ.get('MAIL_PASSWORD')
 
-    SQLALCHEMY_DATABASE_URI = os.environ.get("DATABASE_URL").replace("://", "ql://", 1) or \
-    "sqlite:///" + os.path.join(basedir, 'data.sqlite')
+    #SQLALCHEMY_DATABASE_URI = os.environ.get("DATABASE_URL").replace("://", "ql://", 1) or \
+    #"sqlite:///" + os.path.join(basedir, 'data.sqlite')
 
 
     @classmethod
