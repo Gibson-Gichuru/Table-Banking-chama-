@@ -137,9 +137,7 @@ def bot_callback():
 
             job = task.get_rq_job()
 
-            if job.is_finished:
-
-                results = job.return_value.json()
+            results = job.return_value.json()
 
 
             if results['ResponseCode'] == "0":
