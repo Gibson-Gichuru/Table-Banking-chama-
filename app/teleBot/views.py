@@ -133,7 +133,7 @@ def bot_callback():
 
             ## query if the stk was a success of failure
 
-            task = user.get_task_in_progress()
+            task = user.get_task_in_progress('initiate_stk')
 
             job = task.get_rq_job()
 
