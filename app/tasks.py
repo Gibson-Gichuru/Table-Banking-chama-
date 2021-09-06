@@ -2,9 +2,6 @@ import requests
 
 from .payments.mpesa_utils import Mpesa
 
-
-
-
 def initiate_stk(phonenumber, amount):
 
     mpesa = Mpesa()

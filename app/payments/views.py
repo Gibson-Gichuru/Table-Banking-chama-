@@ -11,7 +11,7 @@ import requests
 
 from app.payments.mpesa_utils import Mpesa
 
-from app.models import User, Payment
+from app.models import User, Payment, Stk
 
 from app import db
 
@@ -90,6 +90,35 @@ def validation():
             }
 
             return Response(jsonify(context_reject))
+
+    return Response(jsonify(context))
+
+
+@payment.route('/stk', methods =["POST"])
+def stk():
+
+    context = {
+        "ResultCode": 0,
+        "ResultDesc": "Accepted"
+    }
+
+    context_reject = {
+        "ResultCode": 0,
+        "ResultDesc": "Cancelled"
+    }
+
+    stk_data = request.get_json()
+
+    if stk_data and stk_data['Body']['stkCallback']['ResponseCode'] != "0":
+
+        return Response(jsonify(context_reject))
+
+    stk = Stk.query.filter_by(CheckoutRequestID = stk_data['Body']['stkCallback']['CheckoutRequestID']).first()
+
+    stk.payment_accepted = True
+
+    db.session.add(stk)
+    db.session.commit()
 
     return Response(jsonify(context))
 

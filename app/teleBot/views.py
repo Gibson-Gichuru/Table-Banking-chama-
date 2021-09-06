@@ -7,13 +7,15 @@ from . import bot
 
 from .bot_func import send_message, parse_message
 
-from app.models import User
+from app.models import User, Stk
 
 from app import db
 
 import requests
 
 from .bot_func import get_bot_Access_token
+
+from sqlalchemy import desc
 
 
 
@@ -129,14 +131,47 @@ def bot_callback():
 
             user.lauch_task("initiate_stk","payment" ,user.phone_number, amount)
 
+            ## query if the stk was a success of failure
+
+            task = user.get_task_in_progress()
+
+            job = task.get_rq_job()
+
+            if job.is_finished:
+
+                results = job.return_value.json()
+
+
+            if results['ResponseCode'] == "0":
+
+                stk = Stk.query.filter_by(initiator = user).order_by(desc(Stk.timestamp)).first()
+
+                stk.CheckoutRequestID = results['CheckoutRequestID']
+
+                db.session.add(stk)
+
+                db.session.commit()
+
+                send_message(
+
+                    chat_id=chat_id,
+                    message="A payment request have been sent to you. \nPlease confirm it to complete\
+                        transaction",
+
+                    token = current_app.config['TELEBOT_TOKEN']
+                )
+
+                return Response('ok', status = 200)
+
+
             send_message(
 
-                chat_id=chat_id,
-                message="A payment request have been sent to you. \nPlease confirm it to complete\
-                    transaction",
+                    chat_id=chat_id,
+                    message="Oups! An Error occured. Do try again latter",
 
-                token = current_app.config['TELEBOT_TOKEN']
-            )
+                    token = current_app.config['TELEBOT_TOKEN']
+                )
+
 
             return Response('ok', status = 200)
 

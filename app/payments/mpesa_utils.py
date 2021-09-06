@@ -82,7 +82,7 @@ class Mpesa:
             "PartyA": self.format_phone_number(phoneNumber),
             "PartyB": os.environ.get('BUSINESS_CODE'),
             "PhoneNumber": self.format_phone_number(phoneNumber),
-            "CallBackURL": os.environ.get('CONFIRMATION_URL'),
+            "CallBackURL": os.environ.get('STK_CALL_BACK'),
             "AccountReference": "CompanyXLTD",
             "TransactionDesc": "Payment of X"
         }

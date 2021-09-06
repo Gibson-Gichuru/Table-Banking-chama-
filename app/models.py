@@ -136,6 +136,8 @@ class User(db.Model, UserMixin):
 
     task = db.relationship('Task', backref = "user", lazy = 'dynamic')
 
+    stk = db.relationship('Stk', backref = 'initiator', lazy = 'dynamic')
+
 
     """When an instance of this class is made check if the email passed equal to the stored admin email
     
@@ -295,7 +297,17 @@ class User(db.Model, UserMixin):
 
     def lauch_task(self, name, description, *args, **kwargs):
 
-        rq_job = current_app.task_queue.enqueue('app.tasks.'+name, *args, **kwargs)
+        if name == "initiate_stk":
+
+            stk = Stk()
+
+            stk.initiator = self
+
+            db.session.add(stk)
+
+            db.session.commit()
+
+        rq_job = current_app.task_queue.enqueue('app.tasks.'+name, result_ttl = 550, *args, **kwargs)
 
         task = Task(id = rq_job.get_id(), name = name, description = description, user = self)
 
@@ -371,6 +383,15 @@ class Payment(db.Model):
     user_id = db.Column(db.Integer, db.ForeignKey('users.id'))
 
 
+class Stk(db.Model):
+
+    id = db.Column(db.Integer, primary_key = True)
+    CheckoutRequestID = db.Column(db.String(64), index =True, default = None)
+    timestamp =db.Column(db.DateTime, default = datetime.utcnow)
+    user_id = db.Column(db.Integer, db.ForeignKey('users.id'))
+    payment_accepted = db.Column(db.Boolean, default = False)
+
+
 class Task(db.Model):
 
     __tablename__ = 'tasks'
@@ -387,7 +408,7 @@ class Task(db.Model):
 
         try:
 
-            rq_job = rq.job.Job.Fetch(self.id, connection=current_app.redis)
+            rq_job = rq.job.Job.fetch(self.id, connection=current_app.redis)
 
         except (redis.exceptions.RedisError, rq.exceptions.NoSuchJobError):
 
