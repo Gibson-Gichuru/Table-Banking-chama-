@@ -385,6 +385,8 @@ class Payment(db.Model):
 
 class Stk(db.Model):
 
+    __tablename__ = "stk"
+
     id = db.Column(db.Integer, primary_key = True)
     CheckoutRequestID = db.Column(db.String(64), index =True, default = None)
     timestamp =db.Column(db.DateTime, default = datetime.utcnow)
