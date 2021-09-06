@@ -137,10 +137,10 @@ def bot_callback():
 
             job = task.get_rq_job()
 
-            results = job.return_value.json()
+            results = job.return_value.json() if job.is_finished else None
 
 
-            if results['ResponseCode'] == "0":
+            if results is not None and results['ResponseCode'] == "0":
 
                 stk = Stk.query.filter_by(initiator = user).order_by(desc(Stk.timestamp)).first()
 

@@ -109,7 +109,7 @@ def stk():
 
     stk_data = request.get_json()
 
-    if stk_data and stk_data['Body']['stkCallback']['ResponseCode'] != "0":
+    if stk_data and stk_data['Body']['stkCallback']['ResultDesc'] != "0":
 
         return Response(jsonify(context_reject))
 
