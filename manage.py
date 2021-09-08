@@ -52,7 +52,7 @@ def deploy():
 @manager.command
 def register_bot():
 
-    url = f"https://api.telegram.org/bot{app.config['TELEBOT_TOKEN']}/setWebhook?url={url_for('bot.bot_callback', _external =True)}"
+    url = f"https://api.telegram.org/bot{app.config['TELEBOT_TOKEN']}/setWebhook?url={app.config['BOT_CALLBACK']}"
 
     response = requests.get(url)
 

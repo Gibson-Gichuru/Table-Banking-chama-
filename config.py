@@ -28,6 +28,7 @@ class Config:
     TELEBOT_TOKEN = os.environ.get('TELEBOT_TOKEN')
     BOT_EMAIL = os.environ.get('BOT_EMAIL')
     BOT_PASS = os.environ.get('BOT_PASS')
+    BOT_CALLBACK = os.environ.get('BOT_CALLBACK')
 
     ##MPESA Config setting
 
