@@ -25,6 +25,11 @@ def confirmation():
 
     payment_data =request.get_json()
 
+    context = {
+        "ResultCode": 0,
+        "ResultDesc": "Accepted"
+    }
+
     if payment_data:
 
         user = User.query.filter_by(phone_number = payment_data['SenderMSISDN']).first()
@@ -57,7 +62,7 @@ def confirmation():
 
             db.session.commit()
 
-            return Response('ok', status = 200)
+            return jsonify(context), 200
 
         else:
 
@@ -89,9 +94,9 @@ def validation():
                 "ResultDesc": "Cancelled"
             }
 
-            return Response(jsonify(context_reject))
+            return jsonify(context_reject), 200
 
-    return Response(jsonify(context))
+    return jsonify(context), 200
 
 
 @payment.route('/stk', methods =["POST"])
@@ -120,7 +125,7 @@ def stk():
     db.session.add(stk)
     db.session.commit()
 
-    return Response(jsonify(context))
+    return jsonify(context), 200
 
 
 @payment.route('/make_payments', methods = ['POST'])
