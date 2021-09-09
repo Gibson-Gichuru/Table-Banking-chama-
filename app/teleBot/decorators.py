@@ -1,19 +1,15 @@
 import functools
 import  re
-
-from .bot_func import start, payment, register, loan, use_bot
-
-from app.models import User
-
-
+from .bot_func import use_bot, start, register, loan, payment
+import pdb
 def parser(func):
 
-    patterns = {
+    common_pattern = r"/[a-zA-Z_]+"
 
-        "phone_number_pattern": r"/[a-zA-z_]+@(\+?254|0)(7)([0-9]{8})",
-        "user_name_pattern": r"/[a-zA-z_]+@[a-zA-z0-9/-_]+",
-        "payment_pattern": r"/[a-zA-Z_-]+@[0-9]+",
-        "common_pattern": r"/[a-zA-Z_]+"
+    patterns = {
+        "phone_number_pattern": r"@(\+?254|0)(7)([0-9]{8})",
+        "user_name_pattern": r"@[a-zA-z0-9/-_]+",
+        "payment_pattern": r"@[0-9]+",
     }
 
     @functools.wraps(func)
@@ -21,29 +17,25 @@ def parser(func):
 
         msg_text = message['message']['text']
 
+        match = re.findall(common_pattern, msg_text)
+        
         for pattern in patterns:
 
-            match = re.findall(patterns[pattern], msg_text)
+            add_on = re.findall(patterns[pattern], msg_text)
 
         if len(match) == 0:
 
             return func(message)
 
-        match = match[0].strip("/")        
+        if len(add_on) == 0:
 
-        try:
-            separator = match.index("@")
-            command = "".join(match[:separator])
-            add_on = "".join(match[separator+1:])
-            message['command'] = command
-            message['add_on'] = add_on
+            add_on = None
 
+        match = match[0].strip("/")
+        add_on = add_on[0].strip("@")   
 
-        except Exception:
-
-            command = match
-            message['command'] = command
-            message['add_on'] = None
+        message['command'] = match
+        message['add_on'] = add_on     
 
         return func(message)
     return parse
@@ -51,17 +43,19 @@ def parser(func):
 
 def construct_message(func):
     reply = {
-
         "PAYMENT":payment,
-        "USE_BOT":use_bot,
         "LOAN":loan,
+        "USE_BOT":use_bot,
         "REGISTER":register,
         "START":start
-    }    
+    }
+
     @functools.wraps(func)
     def build(message):
 
         command = message['command'] if "command" in message else None
+        telegram_username = message['message']['from']['username'] if "username" in message['message']['from'] else "New User"
+        telegram_userId = message['message']['from']['id']
 
         if command is None:
 
@@ -71,20 +65,14 @@ def construct_message(func):
 
         if command.upper() in reply:
 
-            results = reply[command.upper()](add_on)
-
+            results = reply[command.upper()](
+                add_on = add_on,
+                telegram_username = telegram_username,
+                telegram_userId =telegram_userId
+                 
+                )
             message['reply_msg'] = results 
         return func(message)
 
     return build
 
-
-
-def check_user(func):
-
-    @functools.wraps(func)
-    def checker(*args, **kwargs):
-
-        telegram_username = kwargs['tele_username'] 
-
-        user = User.query.filter_by()
