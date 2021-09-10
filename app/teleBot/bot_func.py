@@ -1,6 +1,7 @@
 import functools
 
 from app.models import User
+from app import db
 
 def check_user(func):
     @functools.wraps(func)
@@ -14,7 +15,8 @@ def check_user(func):
 
         if user is None:
 
-            kwargs['message'] = f"Hello {kwargs['telegram_username']}, new here! Please Register With our App to use This Bot"
+            kwargs['message'] = f"Hello {kwargs['telegram_username']}, new here! Please Register With our App to use This Bot via the link bellow\n\
+                https://chama-app.herokuapp.com"
 
             return func(*args, **kwargs)
 
@@ -40,9 +42,39 @@ def payment(*args, **kwargs):
 
         message = f"Hello {kwargs['telegram_username']},\ngrad you are always in touch.\
         \n\nNo amount was issued for transaction. please confirm your payment command and make sure it is as follows.\n/payment@amount"
-        
-    
 
+    try :
+
+
+        int(amount)
+
+        user = User.query.filter_by(tele_username = kwargs['telegram_userid']).first()
+
+        user.lauch_task('initiate_stk', 'payment', user.phone_number, amount)
+
+        task = user.get_task_in_progress('initiate_stk')
+
+        job = task.get_rq_job()
+
+        while True:
+
+            if job.is_finished:
+
+                break 
+
+        result = job.return_value
+
+        if result.status == 200 and result.json()['ResultCode'] == "0":
+
+            return message
+
+        message = message = f"Hello {kwargs['telegram_username']},\nan error occured while processing your payment request\n Please do try again later"
+
+    except ValueError as e:
+
+        message = f"Hello {kwargs['telegram_username']},\ngrad you are always in touch.\
+        \n\nMake sure the value entered for amount is a whole number"
+        
     return message
 
 @check_user
@@ -60,7 +92,30 @@ def loan(*args, **kwargs):
 @check_user
 def use_bot(*args, **kwargs):
 
-    message = "Account linked to this bot"
+    chama_username = kwargs['add_on'] if 'add_on' in kwargs else None
+
+    if chama_username is None:
+
+        message = f"Hello {kwargs['telegram_username']},\nPlease do provide your chama registered username to activate This bot"
+
+    user = User.query.filter_by(tele_username = kwargs['telegram_username']).first()
+
+    if user is None:
+
+        return f"Hello {kwargs['telegram_username']},\nNo user is registered under that name on chama, Please do verify the username to procceed"
+
+    if user.tele_username is None:
+
+        user.tele_username = kwargs['telegram_userId']
+
+        db.session.add(user)
+
+        db.session.commit()
+
+        return f"Hello {kwargs['telegram_username']},\nthis bot is Now linked to your chama Account"
+
+
+    message = f"Hello {kwargs['telegram_username']},\nYou are aready linked to a chama account login in to chama website and update if need"
 
     return message
 
