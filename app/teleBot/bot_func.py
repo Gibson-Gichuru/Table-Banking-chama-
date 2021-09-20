@@ -3,6 +3,8 @@ import functools
 from app.models import User
 from app import db
 
+import pdb
+
 def check_user(func):
     @functools.wraps(func)
     def checker(*args, **kwargs):
@@ -48,7 +50,7 @@ def payment(*args, **kwargs):
 
         int(amount)
 
-        user = User.query.filter_by(tele_username = kwargs['telegram_userid']).first()
+        user = User.query.filter_by(tele_username = kwargs['telegram_userId']).first()
 
         user.lauch_task('initiate_stk', 'payment', user.phone_number, amount)
 
@@ -56,19 +58,28 @@ def payment(*args, **kwargs):
 
         job = task.get_rq_job()
 
+        
+
         while True:
 
             if job.is_finished:
 
                 break 
 
+
         result = job.return_value
 
-        if result.status == 200 and result.json()['ResultCode'] == "0":
+        if result.status_code == 500:
+
+            message = f"Hello {kwargs['telegram_username']},\nan error occured while processing your payment request\n Please do try again later"
 
             return message
 
-        message = message = f"Hello {kwargs['telegram_username']},\nan error occured while processing your payment request\n Please do try again later"
+        if "ResultCode" in result.json() and result.json()['ResultCode'] == "0":
+
+            return message
+
+        return message
 
     except ValueError as e:
 

@@ -32,7 +32,9 @@ def parser(func):
             add_on = None
 
         match = match[0].strip("/")
-        add_on = add_on[0].strip("@")   
+
+    
+        add_on = add_on[0].strip("@")  if add_on is not None else None
 
         message['command'] = match
         message['add_on'] = add_on     
