@@ -5,7 +5,7 @@ basedir = os.path.abspath(os.path.dirname(__file__))
 
 class Config:
     
-    load_dotenv()
+    #load_dotenv()
     SSL_DISABLE = True
     DEBUG = True
     SECRET_KEY = os.environ.get("SECRET_KEY")

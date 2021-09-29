@@ -91,7 +91,7 @@ def payment(*args, **kwargs):
 
         return message
 
-    except ValueError as e:
+    except ValueError:
 
         message = f"Hello {kwargs['telegram_username']},\ngrad you are always in touch.\
         \n\nMake sure the value entered for amount is a whole number"
