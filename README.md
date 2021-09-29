@@ -3,7 +3,6 @@
 
 <div align="center">
 
-### <h3 align= "center">A Simple Instant-Messaging Android App powered by Google's Firebase</h1>
 ### <h3 align= "center">A Simple Chama Round-Table Implementation</h1>
 
 [![Python](https://img.shields.io/badge/Python-14354C?style=for-the-badge&logo=python&logoColor=white)](https://www.python.org/)
@@ -53,7 +52,7 @@
 #### &nbsp; --->MAINTAIN OWN ACCOUNT
 
 * Perform Simple Account Update Actions eg, password resets and Account Deactivation
-* Change Status
+
 
 
 ### Contributing and reporting issues 🤝
