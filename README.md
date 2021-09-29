@@ -81,8 +81,9 @@ I love pull requests from everyone:
 1. [Fork](https://github.com/Gibson-Gichuru/Table-Banking-chama-) this repository:
 
 
-## Let's have fun 🥳🥑
+## Let's have fun codding 🥳🥑
 
 [![ForTheBadge built-with-Python](http://ForTheBadge.com/images/badges/made-with-python.svg)](https://github.com/Gibson-Gichuru/Table-Banking-chama-)
 [![ForTheBadge built-with-love](http://ForTheBadge.com/images/badges/built-with-love.svg)](https://github.com/Gibson-Gichuru/Table-Banking-chama-)
+[![ForTheBadge built-by-developers](http://ForTheBadge.com/images/badges/built-by-developers.svg)](#)
 [![ForTheBadge powered-by-electricity](http://ForTheBadge.com/images/badges/powered-by-electricity.svg)](#)
