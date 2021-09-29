@@ -1,6 +1,6 @@
 import functools
 
-from app.models import User
+from app.models import User, Stk
 from app import db
 
 import pdb
@@ -47,19 +47,24 @@ def payment(*args, **kwargs):
 
     try :
 
-
+        
         int(amount)
 
         user = User.query.filter_by(tele_username = kwargs['telegram_userId']).first()
 
         user.lauch_task('initiate_stk', 'payment', user.phone_number, amount)
 
+        stk = Stk()
+
+        stk.initiator = user
+
+
         task = user.get_task_in_progress('initiate_stk')
 
         job = task.get_rq_job()
 
-        
-
+        # A very bad idea to wait for the job
+        # instead i will fetch the job results using a different thread 
         while True:
 
             if job.is_finished:
@@ -75,7 +80,12 @@ def payment(*args, **kwargs):
 
             return message
 
-        if "ResultCode" in result.json() and result.json()['ResultCode'] == "0":
+        if "ResponseCode" in result.json() and result.json()['ResponseCode'] == "0":
+
+            stk.CheckoutRequestID = result.json()['CheckoutRequestID']
+
+            db.session.add(stk)
+            db.session.commit()
 
             return message
 

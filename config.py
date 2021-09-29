@@ -5,7 +5,7 @@ basedir = os.path.abspath(os.path.dirname(__file__))
 
 class Config:
     
-    #load_dotenv()
+    load_dotenv()
     SSL_DISABLE = True
     DEBUG = True
     SECRET_KEY = os.environ.get("SECRET_KEY")
@@ -56,7 +56,7 @@ class Config:
 class Development(Config):
 
     
-    load_dotenv()
+    #load_dotenv()
     #Development Specific configurations
     MAIL_SERVER = 'smtp.googlemail.com'
     MAIL_PORT = 587
