@@ -17,6 +17,8 @@ from app import db
 
 import json
 
+import pdb
+
 schema = PaymentSchema()
 
 
@@ -112,11 +114,19 @@ def stk():
         "ResultDesc": "Cancelled"
     }
 
+
+    """Improvements to this implementation
+    
+    use a second thread to query the payment status Daraja api using the payment id to confirm that the payment have been done
+    and update the database"""
     stk_data = request.get_json()
 
-    if stk_data and stk_data['Body']['stkCallback']['ResultDesc'] != "0":
+    
 
-        return Response(jsonify(context_reject))
+    if stk_data and stk_data['Body']['stkCallback']['ResultCode'] != 0:
+
+        return Response(context_reject, status = 404)
+ 
 
     stk = Stk.query.filter_by(CheckoutRequestID = stk_data['Body']['stkCallback']['CheckoutRequestID']).first()
 
@@ -144,12 +154,12 @@ def make_payments():
 
         if stk.status == 200:
 
-            return Response(jsonify({'message':"confirm the payment your phone"}), status=200)
+            return Response({'message':"confirm the payment your phone"}, status=200)
 
         else:
 
-            return stk.json()
+            return Response(stk.json())
 
-    return Response(jsonify({"Message":"payment endpoint"}))
+    return Response({"Message":"payment endpoint"})
 
 

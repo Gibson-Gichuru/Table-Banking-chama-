@@ -1,91 +1,148 @@
-import requests
-from requests.auth import HTTPBasicAuth
-from flask import current_app, url_for
+import functools
 
-import re
+from app.models import User, Stk
+from app import db
 
+import pdb
 
-from app.models import BotCommand
+def check_user(func):
+    @functools.wraps(func)
+    def checker(*args, **kwargs):
 
+        telegram_username = kwargs['telegram_username'] 
 
-PHONE_NUMBER_PATTERN = r"/[a-zA-z_]+@(\+?254|0)(7)([0-9]{8})"
-USER_NAME_PATTERN = r"/[a-zA-z_]+@[a-zA-z0-9/-_]+"
-AMOUNT_PATTERN = r"/[a-zA-Z_-]+@[0-9]+"
+        telegram_userid = kwargs['telegram_userId']
 
-def parse_msg_args(msg, pattern, white_out):
+        user = User.query.filter_by(tele_username = telegram_userid).first()
 
-    ticker = re.findall(pattern, msg)
+        if user is None:
 
-    if not ticker:
+            kwargs['message'] = f"Hello {kwargs['telegram_username']}, new here! Please Register With our App to use This Bot via the link bellow\n\
+                https://chama-app.herokuapp.com"
 
-        return None
+            return func(*args, **kwargs)
 
-    return ticker[0].strip(f"/{white_out}@")
+        return func(*args,**kwargs)
 
-
-def parse_message(message):
-
-
-    chat_id = message['message']["chat"]["id"]
-    msg_text = message["message"]["text"]
-    sender_id = message['message']['from']['id']
-    sender_name = message['message']['from']['first_name']
-
-    pattern = r"^/[a-zA-Z_.-]+"
-
-    ticker = re.findall(pattern, msg_text)
-
-    if ticker:
-    
-        command = ticker[0].strip("/")
+    return checker
 
 
-        bot_command = BotCommand.query.filter_by(name = command.upper()).first()
+@check_user
+def start(*args, **kwargs):
 
-        if command.upper() == "USE_BOT":
+    message = kwargs['message'] if 'message' in kwargs else f"Hello {kwargs['telegram_username']},\n grad you are always in touch"
 
-            global USER_NAME_PATTERN
+    return message
+@check_user
+def payment(*args, **kwargs):
 
-            chama_username = parse_msg_args(msg_text, USER_NAME_PATTERN, command)
+    amount = kwargs['add_on'] if 'add_on' in kwargs else None 
+    message = kwargs['message'] if 'message' in kwargs else f"Hello {kwargs['telegram_username']},\ngrad you are always in touch.\
+        \n\nPayment request sent to your phone\ndo confirm it to complete the payment"
 
-            return chat_id, bot_command, sender_id, sender_name, chama_username, None
-            
+    if amount is None:
 
-        if command.upper() == "PAYMENT":
+        message = f"Hello {kwargs['telegram_username']},\ngrad you are always in touch.\
+        \n\nNo amount was issued for transaction. please confirm your payment command and make sure it is as follows.\n/payment@amount"
 
-            global AMOUNT_PATTERN
+    try :
 
-            amount = parse_msg_args(msg_text, AMOUNT_PATTERN, command)
+        
+        int(amount)
 
-            return chat_id, bot_command, sender_id, sender_name, None, amount
+        user = User.query.filter_by(tele_username = kwargs['telegram_userId']).first()
 
-        return chat_id, bot_command, sender_id, sender_name, None, None
+        user.lauch_task('initiate_stk', 'payment', user.phone_number, amount)
 
-    else:
+        stk = Stk()
 
-        return chat_id, None, sender_id, sender_name, None, None
-
-
-
-
-
-def send_message(chat_id,message,token):
-
-    url = f"https://api.telegram.org/bot{token}/sendMessage"
-
-    payload = {'chat_id':chat_id, 'text':message}
-
-    response = requests.post(url, json = payload)
-
-    return response
+        stk.initiator = user
 
 
+        task = user.get_task_in_progress('initiate_stk')
 
-def get_bot_Access_token(email, password):
+        job = task.get_rq_job()
 
-    response = requests.get(url=url_for('auth.token', _external = True), auth = HTTPBasicAuth(email, password))
+        # A very bad idea to wait for the job
+        # instead i will fetch the job results using a different thread 
+        while True:
 
-    return response.json()['token']
+            if job.is_finished:
+
+                break 
+
+
+        result = job.return_value
+
+        if result.status_code == 500:
+
+            message = f"Hello {kwargs['telegram_username']},\nan error occured while processing your payment request\n Please do try again later"
+
+            return message
+
+        if "ResponseCode" in result.json() and result.json()['ResponseCode'] == "0":
+
+            stk.CheckoutRequestID = result.json()['CheckoutRequestID']
+
+            db.session.add(stk)
+            db.session.commit()
+
+            return message
+
+        return message
+
+    except ValueError:
+
+        message = f"Hello {kwargs['telegram_username']},\ngrad you are always in touch.\
+        \n\nMake sure the value entered for amount is a whole number"
+        
+    return message
+
+@check_user
+def register(*args, **kwargs):
+
+    message = kwargs['message'] if 'message' in kwargs else f"Hello {kwargs['telegram_username']},\nan account have aready been linked to this bot"
+
+    return  message
+@check_user
+def loan(*args, **kwargs):
+
+    message = kwargs['message'] if 'message' in kwargs else f"Hello {kwargs['telegram_username']},\nlogin to the chama website to appy for a loan"
+
+    return message
+@check_user
+def use_bot(*args, **kwargs):
+
+    chama_username = kwargs['add_on'] if 'add_on' in kwargs else None
+
+    if chama_username is None:
+
+        message = f"Hello {kwargs['telegram_username']},\nPlease do provide your chama registered username to activate This bot"
+
+    user = User.query.filter_by(tele_username = kwargs['telegram_username']).first()
+
+    if user is None:
+
+        return f"Hello {kwargs['telegram_username']},\nNo user is registered under that name on chama, Please do verify the username to procceed"
+
+    if user.tele_username is None:
+
+        user.tele_username = kwargs['telegram_userId']
+
+        db.session.add(user)
+
+        db.session.commit()
+
+        return f"Hello {kwargs['telegram_username']},\nthis bot is Now linked to your chama Account"
+
+
+    message = f"Hello {kwargs['telegram_username']},\nYou are aready linked to a chama account login in to chama website and update if need"
+
+    return message
+
+
+
+
 
 
 

@@ -297,16 +297,6 @@ class User(db.Model, UserMixin):
 
     def lauch_task(self, name, description, *args, **kwargs):
 
-        if name == "initiate_stk":
-
-            stk = Stk()
-
-            stk.initiator = self
-
-            db.session.add(stk)
-
-            db.session.commit()
-
         rq_job = current_app.task_queue.enqueue('app.tasks.'+name, result_ttl = 550, *args, **kwargs)
 
         task = Task(id = rq_job.get_id(), name = name, description = description, user = self)
@@ -388,7 +378,7 @@ class Stk(db.Model):
     __tablename__ = "stk"
 
     id = db.Column(db.Integer, primary_key = True)
-    CheckoutRequestID = db.Column(db.String(64), index =True, default = None)
+    CheckoutRequestID = db.Column(db.String(64), index=True, default=None)
     timestamp =db.Column(db.DateTime, default = datetime.utcnow)
     user_id = db.Column(db.Integer, db.ForeignKey('users.id'))
     payment_accepted = db.Column(db.Boolean, default = False)

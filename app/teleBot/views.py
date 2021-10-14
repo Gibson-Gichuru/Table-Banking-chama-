@@ -1,196 +1,38 @@
-
-from flask import config, request, current_app, Response
-from flask.helpers import url_for
-
-
+import os
+import requests
+from flask import Response
 from . import bot
 
-from .bot_func import send_message, parse_message
+from .decorators import parser, construct_message
 
-from app.models import User, Stk
+from flask import request
 
-from app import db
+@parser
+@construct_message
+def updated_repy(message):
 
-import requests
+    return message
 
-from .bot_func import get_bot_Access_token
+def send_message(message):
 
-from sqlalchemy import desc
+    token = os.environ.get('TELEBOT_TOKEN')
 
+    url = f"https://api.telegram.org/bot{token}/sendMessage"
 
+    chat_id = message['message']['chat']['id']
 
+    reply = message['reply_msg'] if "reply_msg" in message else "Oups! didn't get what you requested,\n do press the command menu for assistance"
+
+    payload = {'chat_id':chat_id, 'text':reply}
+
+    return requests.post(url=url, json =payload)
 
 @bot.route("/telebot", methods=['POST'])
 def bot_callback():
 
-    msg = request.get_json()
+    user_msg = request.get_json()
+    reply_msg= updated_repy(user_msg) 
 
-    chat_id, command, msg_sender_id, msg_sender, chama_username, amount = parse_message(
-        msg)
-
-
-    if command is not None:
-
-        if command.name == "START":
-
-            user = User.query.filter_by(tele_username=str(msg_sender_id)).first()
-
-            if user is None:
-
-                send_message(
-                    chat_id,
-                    f"Hello {msg_sender} !  \nNew Here? please text /use_bot@<username> to get started with this bot.\
-                        \n\nPLEASE NOTE IT'S YOUR CHAMA USERNAME AND NOT TELEGRAM USERNAME",
-                    current_app.config['TELEBOT_TOKEN'])
-
-            else:
-
-                send_message(
-                    chat_id, f"Hello {msg_sender}! Long time no see, Grad you are back", current_app.config['TELEBOT_TOKEN'])
-
-            return Response('ok', status=200)
-
-        elif command.name == "USE_BOT":
-
-            if chama_username is None:
-
-                send_message(
-
-                    chat_id=chat_id,
-                    message="Looks like you forgot to issue your username!",
-                    token=current_app.config['TELEBOT_TOKEN']
-                )
-
-                return Response('ok', status=200)
-
-            user = User.query.filter_by(username=chama_username).first()
-
-            if user is None:
-
-                send_message(
-
-                    chat_id=chat_id,
-                    message="Looks like you are yet To register with our Chama",
-                    token=current_app.config['TELEBOT_TOKEN']
-                )
-
-                return Response('ok', status=200)
-
-            if user.tele_username is not None:
-
-                send_message(
-                    chat_id=chat_id,
-                    message="Bot Aready connected To an account",
-                    token = current_app.config['TELEBOT_TOKEN']
-                )
-
-                return Response('ok', status = 200)
-
-            user.tele_username = msg_sender_id
-
-            db.session.add(user)
-
-            db.session.commit()
-
-            send_message(
-
-                chat_id=chat_id,
-                message="Account Now Connected to this Bot",
-                token=current_app.config['TELEBOT_TOKEN']
-            )
-
-            return Response('ok', status=200)
-
-        elif command.name == "REGISTER":
-
-            pass
-
-        elif command.name == "PAYMENT":
-
-            if amount is None:
-
-                send_message(
-                    chat_id=chat_id, 
-                    message="PLEASE Do Issue an Amount To Transact",
-                    token=current_app.config['TELEBOT_TOKEN'])
-
-                return Response('ok', status = 200)
-
-            user = User.query.filter_by(tele_username = str(msg_sender_id)).first()
-
-            if user is None:
-
-                send_message(
-                    chat_id,
-                    f"Hello {msg_sender} !  \nNew Here? please text /use_bot@<username> to get started with this bot.\
-                        \n\nPLEASE NOTE IT'S YOUR CHAMA USERNAME AND NOT TELEGRAM USERNAME",
-                    current_app.config['TELEBOT_TOKEN'])
-
-
-                return Response('ok', status = 200)
-
-            user.lauch_task("initiate_stk","payment" ,user.phone_number, amount)
-
-            ## query if the stk was a success of failure
-
-            task = user.get_task_in_progress('initiate_stk')
-
-            job = task.get_rq_job()
-
-            job_finished = False
-
-            while not job_finished:
-
-                if job.is_finished:
-
-                    job_finished = True
-
-            results = job.return_value
-
-            results_dict = results.json()
-
-            if results_dict is not None and results_dict['ResponseCode'] == "0":
-
-                stk = Stk.query.filter_by(initiator = user).order_by(desc(Stk.timestamp)).first()
-
-                stk.CheckoutRequestID = results['CheckoutRequestID']
-
-                db.session.add(stk)
-
-                db.session.commit()
-
-                send_message(
-
-                    chat_id=chat_id,
-                    message="A payment request have been sent to you. \nPlease confirm it to complete\
-                        transaction",
-
-                    token = current_app.config['TELEBOT_TOKEN']
-                )
-
-                return Response('ok', status = 200)
-
-
-            send_message(
-
-                    chat_id=chat_id,
-                    message="Oups! An Error occured. Do try again latter",
-
-                    token = current_app.config['TELEBOT_TOKEN']
-                )
-
-
-            return Response('ok', status = 200)
-
-        else:
-
-            pass
-
-    else:
-
-        send_message(chat_id, "invalid_command",
-                     current_app.config['TELEBOT_TOKEN'])
-
-        return Response('ok', status=200)
+    send_message(reply_msg)
 
     return Response('ok', status=200)
