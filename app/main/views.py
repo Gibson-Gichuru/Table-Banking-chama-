@@ -11,6 +11,8 @@ from app import db
 
 from app.email import send_email
 
+import pdb
+
 @main.route("/", methods = ["GET"])
 def index():
 
@@ -39,9 +41,8 @@ def login():
             return redirect(next)
 
         else:
-
             flash("Invalid Email or Password")
-
+        
     return render_template('auth/login.html', form = form)
 
 

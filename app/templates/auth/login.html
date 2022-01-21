@@ -1,51 +1,50 @@
-{% extends "base.html"%}
-{% block title %}| Account Login{% endblock %}
-{% block imports %}
-<link rel="stylesheet" type="text/css" href="{{ url_for('static', filename = 'register.css')}}">
-{% endblock %}
-{% block body%}
-<div class="container">
-  <div class="row">
-    <div class="col-lg-10 col-xl-9 mx-auto">
-      <div class="card flex-row my-5 border-0 shadow rounded-3 overflow-hidden">
-        <div class="card-img-left d-none d-md-flex">
-          <!-- Background image for card set in CSS! -->
-        </div>
-        <div class="card-body p-4 p-sm-5">
-          <h5 class="card-title text-center mb-5 fw-light fs-5">Login</h5>
-          <form method="POST">
+{% extends "base.html"%} {% block main_content %}
+<div class="container  main_content row">
+  <div class="banner">
+    <img  src="{{ url_for('static', filename='assets/rafiki.svg')}}"
+    alt="a lady saving money into a piggy bank"
+    class="banner_img">
 
-            {{ form.csrf_token}}
-            <div class="form-floating mb-3">
-              {{ form.email(class = "form-control", id ="floatingInputEmail", placeholder ="name@example.com")}}
-              <label for="floatingInputEmail">Email address</label>
-            </div>
-
-            <hr>
-
-            <div class="form-floating mb-3">
-              {{ form.password(class = "form-control", id ="floatingPassword", placeholder="Password")}}
-              <label for="floatingPassword">Password</label>
-            </div>
-            <div class="form-check mb-3">
-              {{form.remember_me(class="form-check-input", id="rememberPasswordCheck")}}
-              <label class="form-check-label" for="Remember Me!">
-                Remember password
-              </label>
-            </div>
-
-            <div class="d-grid mb-2">
-              <button class="btn btn-lg btn-primary btn-login fw-bold text-uppercase" type="submit">Login</button>
-            </div>
-
-            <a class="d-block text-center mt-2 small" href="{{ url_for('main.forgot_password')}}">Forgot Password</a>
-
-            <a class="d-block text-center mt-2 small" href="{{ url_for('main.join')}}">Don't have an account? Sign Up</a>
-
-          </form>
-        </div>
+  </div>
+  <div class="form_wrapper row">
+    <h1 class="form_title accent">Sign In</h1>
+    <form method="POST">
+      {{ form.csrf_token}}
+      <div class="form_elements">
+        <span class="indicator-icons material-icons success accent"> check_circle </span>
+        <span class="indicator-icons material-icons error"> error_outline </span>
+        <label for="email" class="small--font">Email</label>
+        {{form.email(class="form_input", id="email")}}
+        {% with messages = get_flashed_messages() %}
+        {% if messages %}
+        <span class="error_message error--fs error">{{messages[0]}}</span>
+        {% endif %}
+        {% endwith%}
       </div>
-    </div>
+      <div class="form_elements">
+        <span class="indicator-icons material-icons success accent"> check_circle </span>
+        <span class="indicator-icons material-icons error"> error_outline </span>
+        <label for="password" class="small--font">Password</label>
+        {{form.password(class="form_input", id="password")}}
+        {% with  messages = get_flashed_messages() %}
+        {% if messages %}
+        <span class="error_message error--fs error">{{ messages[0] }}</span>
+        {% endif%}
+        {% endwith %}
+      </div>
+      <div class="form_elements row">
+        <label for="remember" class="small--font">
+          Remember me
+        </label>
+        {{form.remember_me(id="remember", style="margin-left: 1em;")}}
+      </div>
+      <div class="form_elements row">
+        <button class="btn" type="submit">Sign In</button>
+      </div>
+    </form>
+
+    <p class="small--font">Don't have an account?<span class="accent">Sign Up</span></p>
+    <p class="small--font">Forgot<span class="accent">Password?</span></p>
   </div>
 </div>
-{% endblock %}
+{% endblock%}
