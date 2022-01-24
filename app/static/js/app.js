@@ -4,16 +4,36 @@ const menu = document.querySelector(".nav_bar");
 
 const emailField = document.querySelector("#email");
 const passwordField = document.querySelector("#password");
+const passwordField2 = document.querySelector("#password2")
 
 // Register event handlers
 menu_btn.addEventListener("click", openMenu);
 
 emailField.addEventListener("keypress", emailValidate);
-passwordField.addEventListener("keydown", passwordValidate);
+passwordField.addEventListener("keyup", passwordValidate);
+
+if(passwordField2 !== null){
+  passwordField2.addEventListener("keyup", confirmPassword);
+}
+
+
 
 // custom functions
 function openMenu() {
   menu.classList.toggle("open_nav");
+}
+
+window.setInterval(clearError, 2000);
+
+function clearError() {
+
+  let error_message = document.querySelector(".notification");
+
+  if(error_message != null){
+    error_message.classList.add('clear_notification')
+  }
+
+  
 }
 
 // email validator
@@ -43,6 +63,19 @@ function passwordValidate() {
   }
 }
 
+function confirmPassword() {
+
+  if(this.value != passwordField.value){
+    notify(this, message = "Password don't  match", state = "error");
+    return
+  }
+  else{
+    
+    notify(this, message = "",state = "success");
+  }
+  
+  
+}
 // user notification function
 
 function notify(element, message = "", state) {

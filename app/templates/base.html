@@ -29,7 +29,7 @@
         </div>
         <nav class="nav_bar">
           <ul class="nav_items">
-            <li class="nav_item"><a href="#" class="nav_link">Home</a></li>
+            <li class="nav_item"><a href="{{url_for('main.index')}}" class="nav_link">Home</a></li>
             <li class="nav_item"><a href="#" class="nav_link">About</a></li>
             <li class="nav_item"><a href="#" class="nav_link">Contacts</a></li>
             <li class="nav_item"><a href="#" class="nav_link">FAQs</a></li>
@@ -38,6 +38,18 @@
       </div>
     </header>
     <main>
+      {% with message = get_flashed_messages() %}
+      {% if message %}
+      <div class="notification">
+            <span class="notification__message">
+              {{ message[0] }}
+            </span>
+        <!-- Testing notification -->
+      </div>
+      {% else %}
+
+      {% endif %}
+      {% endwith %}
       {% block main_content %}
       {% endblock %}
     </main>

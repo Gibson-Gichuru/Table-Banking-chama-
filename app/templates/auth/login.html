@@ -11,10 +11,13 @@
     <form method="POST">
       {{ form.csrf_token}}
       <div class="form_elements">
-        <span class="indicator-icons material-icons success accent"> check_circle </span>
-        <span class="indicator-icons material-icons error"> error_outline </span>
         <label for="email" class="small--font">Email</label>
-        {{form.email(class="form_input", id="email")}}
+        <div class="input_group">
+          {{form.email(class="form_input", id="email")}}
+          <span class="indicator-icons material-icons success accent"> check_circle </span>
+          <span class="indicator-icons material-icons error"> error_outline </span>
+        </div>
+        
         {% with messages = get_flashed_messages() %}
         {% if messages %}
         <span class="error_message error--fs error">{{messages[0]}}</span>
@@ -22,10 +25,14 @@
         {% endwith%}
       </div>
       <div class="form_elements">
-        <span class="indicator-icons material-icons success accent"> check_circle </span>
-        <span class="indicator-icons material-icons error"> error_outline </span>
+        
         <label for="password" class="small--font">Password</label>
-        {{form.password(class="form_input", id="password")}}
+        <div class="input_group">
+          {{form.password(class="form_input", id="password")}}
+          <span class="indicator-icons material-icons success accent"> check_circle </span>
+          <span class="indicator-icons material-icons error"> error_outline </span>
+        </div>
+       
         {% with  messages = get_flashed_messages() %}
         {% if messages %}
         <span class="error_message error--fs error">{{ messages[0] }}</span>
@@ -43,8 +50,8 @@
       </div>
     </form>
 
-    <p class="small--font">Don't have an account?<span class="accent">Sign Up</span></p>
-    <p class="small--font">Forgot<span class="accent">Password?</span></p>
+    <p class="small--font">Don't have an account? <a class="accent" href="{{ url_for('main.join')}}"> Sign Up</a></p>
+    <p class="small--font">Forgot <a class="accent" href="{{url_for('main.forgot_password')}}">Password</a></p>
   </div>
 </div>
 {% endblock%}

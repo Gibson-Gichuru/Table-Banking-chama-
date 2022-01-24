@@ -84,6 +84,27 @@ input, .btn{
     opacity: .7;
 }
 
+/* Notification element Styling */
+.notification {
+    font-size: 1rem;
+    position: absolute;
+    width: 80%;
+    max-width: 400px;
+    top:13%;
+    left: 50%;
+    transform: translateX(-50%);
+    background-color: rgba(218, 117, 95,.3);
+    padding: 1em 1em;
+    text-align: center;
+    border-radius: 100px;
+    transition: opacity 300ms ease-in-out;
+
+}
+
+.clear_notification {
+    opacity: 0;
+}
+
 /* header styling */
 header {
     position: sticky;
@@ -146,8 +167,11 @@ header .row {
     align-items: center;
 }
 .form_elements {
-    position: relative;
+    
     margin: .6em 0;
+}
+.input_group{
+    position: relative;
 }
 .form_elements.row{
     justify-content: center;
@@ -157,11 +181,12 @@ header .row {
     top: 50%;
     right: .5em;
     transform: translateY(-50%);
-    opacity: 0;
+    opacity: 1;
     transition: opacity 250ms ease-in-out;
 }
 .form_input{
     margin: .1em 0;
+    font: 1.5rem;
 }
 
 /* Dynamic display styles */
@@ -206,6 +231,11 @@ main {
 }
 
 @media  (min-width:62.5rem){
+    .notification {
+        top:15%;
+        left: 70%;
+    
+    }
     .main_content.row {
         align-items: center;
         justify-content: space-between;

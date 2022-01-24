@@ -1,5 +1,68 @@
-{% extends "base.html"%}
-{% block title %}| Account Registration{% endblock %}
+{% extends "base.html"%} {% block main_content %}
+<div class="container main_content row">
+  <div class="banner">
+    <img
+      src="{{ url_for('static', filename='assets/rafiki.svg')}}"
+      alt="a lady saving money into a piggy bank"
+      class="banner_img"
+    />
+  </div>
+  <div class="form_wrapper row">
+    <h1 class="form_title accent">Sign Up</h1>
+    <form method="POST">
+      {{ form.csrf_token}}
+      <div class="form_elements">
+        <label for="email" class="small--font">Email</label>
 
-{% block main_content %}
+        <div class="input_group">
+          <span class="indicator-icons material-icons success accent">
+            check_circle
+          </span>
+          <span class="indicator-icons material-icons error">
+            error_outline
+          </span>
+          {{form.email(class="form_input", id="email")}}
+        </div>
+        <span class="error_message error--fs error"></span>
+      </div>
+      <div class="form_elements">
+        <label for="password" class="small--font">Password</label>
+
+        <div class="input_group">
+          {{form.password(class="form_input", id="password")}}
+          <span class="indicator-icons material-icons success accent">
+            check_circle
+          </span>
+          <span class="indicator-icons material-icons error">
+            error_outline
+          </span>
+        </div>
+        <span class="error_message error--fs error"></span>
+      </div>
+      <div class="form_elements">
+        <label for="password" class="small--font">Confirm Password</label>
+
+        <div class="input_group">
+          {{form.password2(class="form_input", id="password2")}}
+          <span class="indicator-icons material-icons success accent">
+            check_circle
+          </span>
+          <span class="indicator-icons material-icons error">
+            error_outline
+          </span>
+        </div>
+        <span class="error_message error--fs error"></span>
+      </div>
+
+      <div class="form_elements row">
+        <button class="btn" type="submit">Sign In</button>
+      </div>
+    </form>
+
+    <p class="small--font">
+      Have an account?
+      <a class="accent" href="{{ url_for('main.index')}}"> Sign In</a>
+    </p>
+  </div>
+</div>
 {% endblock%}

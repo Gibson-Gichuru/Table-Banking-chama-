@@ -34,16 +34,6 @@ class RegistrationForm(FlaskForm):
 
     password2 = PasswordField("confirm password", validators=[DataRequired()])
 
-    phonenumber = StringField("PhoneNumber", validators = [
-
-        DataRequired(),
-        Regexp(
-            "^(\+?254|0)(7)([0-9]{8})$",
-            0,
-            "Invalid Phonenumber format"
-        )
-    ])
-
     submit = SubmitField("Register")
 
     # custom validators

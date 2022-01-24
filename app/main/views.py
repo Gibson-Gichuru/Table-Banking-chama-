@@ -41,6 +41,7 @@ def login():
             return redirect(next)
 
         else:
+
             flash("Invalid Email or Password")
         
     return render_template('auth/login.html', form = form)
@@ -67,7 +68,6 @@ def join():
         user.email = form.email.data
         user.username = form.username.data
         user.password = form.password.data
-        user.phone_number = form.phonenumber.data
 
         db.session.add(user)
 
@@ -165,6 +165,12 @@ def logout():
 def unconfirmed():
 
     return render_template('auth/unconfirmed.html')
+
+
+@main.route('/about')
+def about():
+
+    return render_template('/main/about.html')
 
 
 @main.before_app_request
