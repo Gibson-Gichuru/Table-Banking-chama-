@@ -1,5 +1,6 @@
+import email
 from flask_wtf import FlaskForm
-from wtforms import StringField, SubmitField, PasswordField,BooleanField
+from wtforms import StringField, SubmitField, PasswordField,BooleanField, TextAreaField
 from wtforms.validators import DataRequired, Email, Length, Regexp, EqualTo
 from wtforms import ValidationError
 
@@ -89,7 +90,16 @@ class LoginForm(FlaskForm):
 
 
 
+class ContactForm(FlaskForm):
 
+    username = StringField("username", validators = [DataRequired(), Length(1,64)])
+
+    email = StringField("email", validators=[DataRequired(), Length(1, 64), Email()])
+
+    message = TextAreaField("message", validators = [DataRequired()])
+
+    
+    
 
 
 

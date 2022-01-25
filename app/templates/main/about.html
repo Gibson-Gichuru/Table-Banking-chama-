@@ -1,4 +1,37 @@
 {% extends 'base.html'%}
 {% block main_content %}
-
+<div class="container  main_content row">
+    <div class="banner">
+      <img  src="{{ url_for('static', filename='assets/rafiki.svg')}}"
+      alt="a lady saving money into a piggy bank"
+      class="banner_img">
+  
+    </div>
+    <div class="max__width">
+        <div class="about__section row>
+            <div class="about_text">
+                <h2 class="about_title accent">About</h2>
+                <p>
+                    A simple implementation of the round circle banking system.
+                </p>
+                <p>
+                    The application offers member(user) management system, 
+                    C2B( member to circle fund deposits),
+                    B2C(circle to member fund disbasment) and member assitance bot
+                </p>
+            </div>
+            <div class="tools_used">
+                <h2 class="about__title accent">Tools Used</h2>
+                <ul class="tools_list">
+                    <li class="list_items">Python<span class="error">   (Flask)</span></li>
+                    <li class="list_items">Postgress<span class="error"> (Production Database)</span></li>
+                    <li class="list_items">Daraja Api<span class="error">( Payment gateway:-both C2B and B2C)</span></li>
+                    <li class="list_items">Redis-workers<span class="error"> (Handling scheduled fund disbusment)</span></li>
+                    <li class="list_items">Linode<span class="error"> (Production hosting service)</span></li>
+                    <li class="list_items">Telegram API<span class="error"> (User Bot Assistances)</span></li>
+                </ul>
+            </div>
+    </div>
+    </div>
+  </div>
 {% endblock %}

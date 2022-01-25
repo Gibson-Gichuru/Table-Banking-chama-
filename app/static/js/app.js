@@ -10,7 +10,10 @@ const passwordField2 = document.querySelector("#password2")
 menu_btn.addEventListener("click", openMenu);
 
 emailField.addEventListener("keypress", emailValidate);
-passwordField.addEventListener("keyup", passwordValidate);
+
+if(passwordField !== null){
+  passwordField.addEventListener("keyup", confirmPassword);
+}
 
 if(passwordField2 !== null){
   passwordField2.addEventListener("keyup", confirmPassword);
@@ -33,7 +36,6 @@ function clearError() {
     error_message.classList.add('clear_notification')
   }
 
-  
 }
 
 // email validator
@@ -81,8 +83,8 @@ function confirmPassword() {
 function notify(element, message = "", state) {
 
   let errorMessageElement = element.nextElementSibling;
-  let successIndicator = element.previousElementSibling.previousElementSibling.previousElementSibling;
-  let errorIndicator = element.previousElementSibling.previousElementSibling;
+  let successIndicator = element.nextElementSibling;
+  let errorIndicator = successIndicator.nextElementSibling;
 
   switch (state) {
     case "success":

@@ -30,9 +30,9 @@
         <nav class="nav_bar">
           <ul class="nav_items">
             <li class="nav_item"><a href="{{url_for('main.index')}}" class="nav_link">Home</a></li>
-            <li class="nav_item"><a href="#" class="nav_link">About</a></li>
-            <li class="nav_item"><a href="#" class="nav_link">Contacts</a></li>
-            <li class="nav_item"><a href="#" class="nav_link">FAQs</a></li>
+            <li class="nav_item"><a href="{{ url_for('main.about')}}" class="nav_link">About</a></li>
+            <li class="nav_item"><a href="{{ url_for('main.contacts')}}" class="nav_link">Contacts</a></li>
+            <li class="nav_item"><a href="{{ url_for('main.Faqs')}}" class="nav_link">FAQs</a></li>
           </ul>
         </nav>
       </div>

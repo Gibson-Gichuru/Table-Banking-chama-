@@ -1,9 +1,10 @@
-from flask import render_template, flash, redirect, request
+from email import message
+from flask import render_template, flash, redirect, request, current_app
 from flask_login import login_user, login_required, logout_user, current_user
 from flask.helpers import url_for
 from . import main
 
-from .form import  RegistrationForm, FogotPasswordForm, PasswordRestForm, LoginForm
+from .form import  RegistrationForm, FogotPasswordForm, PasswordRestForm, LoginForm, ContactForm
 
 from app.models import User
 
@@ -12,6 +13,8 @@ from app import db
 from app.email import send_email
 
 import pdb
+
+
 
 @main.route("/", methods = ["GET"])
 def index():
@@ -161,7 +164,6 @@ def logout():
 
 
 @main.route("/unconfirmed")
-@login_required
 def unconfirmed():
 
     return render_template('auth/unconfirmed.html')
@@ -173,12 +175,42 @@ def about():
     return render_template('/main/about.html')
 
 
+
+@main.route('/contacts', methods = ['GET', 'POST'])
+def contacts():
+
+    form = ContactForm()
+
+    if form.validate_on_submit():
+
+        # implement an email sending fuctionality
+
+        send_email(
+            current_app.config['MAIL_ADMIN'], 
+            "Account Password Reset",
+            "email/message", 
+            name = form.username.data,
+            email = form.email.data,
+            message = form.message.data
+            )
+
+        flash(f"Message Received!")
+
+        print("Send Email to the admin")
+
+    return render_template('/main/contacts.html', form = form)
+
+
+@main.route('/FAQs')
+def Faqs():
+
+    return render_template('/main/faqs.html')
+
+
 @main.before_app_request
 def before_request():
 
     if current_user.is_authenticated and  not current_user.confirmed and request.endpoint[:5] != "auth.":
 
         return redirect(url_for('main.unconfirmed'))
-
-
 

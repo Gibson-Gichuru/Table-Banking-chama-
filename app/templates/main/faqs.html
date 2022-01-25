@@ -1,0 +1,27 @@
+{% extends "base.html"%}
+{% block main_content %}
+<div class="container  main_content row">
+    <div class="banner">
+      <img  src="{{ url_for('static', filename='assets/rafiki.svg')}}"
+      alt="a lady saving money into a piggy bank"
+      class="banner_img">
+  
+    </div>
+    <div class="about__section row max__width">
+        <div class="about_text">
+            <h2 class="about_title accent">FAQs</h2>
+            <p>
+                The Payment functionality of this application is implimented 
+                on the sandbox environment provided by the Api provider (Safaricom Inc)
+                 and under no sucumtance should the user transact with the application 
+
+            </p>
+            <p class="error">
+                The application is under constant maintaince and does not garantee full 
+                availabilty to its usera. any bugs or improvements to the application are 
+                more then welcome
+            </p>
+        </div>
+    </div>
+  </div>
+{% endblock %}

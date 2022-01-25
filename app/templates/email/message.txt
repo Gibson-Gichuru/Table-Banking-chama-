@@ -1,0 +1,7 @@
+Message Notification
+
+Name: {{ name }}
+
+email: {{Email}}
+
+Subject : {{ message}}
